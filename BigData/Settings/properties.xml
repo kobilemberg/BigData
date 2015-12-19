@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.8.0_51" class="java.beans.XMLDecoder">
+ <object class="ac.lemberg.kobi.properties.Properties">
+  <void property="UI">
+   <string>GUI</string>
+  </void>
+  <void property="host">
+   <string>192.168.254.131</string>
+  </void>
+  <void property="jobServerInputFolderPath">
+   <string>/home/training/input</string>
+  </void>
+  <void property="jobServerOutputFolderPath">
+   
+  </void>
+  <void property="password">
+   <string>training</string>
+  <string>/home/training/output</string></void>
+  <void property="port">
+   <int>22</int>
+  </void>
+  <void property="userName">
+   <string>training</string>
+  </void>
+ </object>
+</java>
