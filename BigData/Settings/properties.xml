@@ -14,8 +14,7 @@
    
   </void>
   <void property="password">
-   <string>training</string>
-  <string>/home/training/output</string></void>
+   <string>training</string></void>
   <void property="port">
    <int>22</int>
   </void>

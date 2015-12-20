@@ -36,7 +36,6 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 	PrintWriter out;
 	int userCommand=0;
 	Properties properties;
-	boolean serverIsOn = true; 
 	Label serverStatus;
 	Label serverAddress;
 	Label numOfClients; 
@@ -64,11 +63,7 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 		rowLayout.type = SWT.VERTICAL;
 		serverForm.setLayout(rowLayout);
 		serverTab.setControl(serverForm);
-		
-
-	
-		
-		serverAddress = createLabel(serverForm, SWT.NULL, ("Job host: "+properties.getHost()+":"+properties.getPort()));
+		serverAddress = createLabel(serverForm, SWT.NULL, "Host:"+properties.getHost());
 		serverStatus = createLabel(serverForm, SWT.NULL , "Job Status: Off");
 		startStopButton = createButton(serverForm, "Start job", "Resources/power.png",160,30);
 		TabItem propertiesTab = new TabItem(folder, SWT.NULL);
@@ -86,45 +81,54 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 			
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				if (serverIsOn){
-					viewCommandMap.get("Connect").doCommand(new String[]{(properties.getHost()),(properties.getUserName()),(properties.getPassword())});
-					System.out.println("Connected!");
-					
-					viewCommandMap.get("Execute").doCommand(new String[]{"rm -Rf "+properties.getJobServerInputFolderPath()});
-					viewCommandMap.get("Execute").doCommand(new String[]{"rm -Rf "+properties.getJobServerOutputFolderPath()});
-					viewCommandMap.get("Execute").doCommand(new String[]{"hadoop fs -rmr output"});
-					System.out.println("Removed all folders");
-					viewCommandMap.get("Execute").doCommand(new String[]{"mkdir "+properties.getJobServerInputFolderPath()});
-					viewCommandMap.get("Execute").doCommand(new String[]{"cd "+properties.getJobServerInputFolderPath()});
-					File inputFolder = new File("input");
-					File[] listOfFiles = inputFolder.listFiles();
-					for(File log:listOfFiles)
-					{
-						viewCommandMap.get("Transfer").doCommand(new String[]{"input/"+log.getName(),properties.getJobServerInputFolderPath()});
-					}
-					System.out.println("Transferd files from input To: "+properties.getJobServerInputFolderPath());
-					viewCommandMap.get("Execute").doCommand(new String[]{"hadoop fs -mkdir logFilterInput"});
-					viewCommandMap.get("Execute").doCommand(new String[]{"hadoop fs -put "+properties.getJobServerInputFolderPath()+" logFilterInput"});
-					viewCommandMap.get("Execute").doCommand(new String[]{"cd /home/training/Desktop; "});
-					viewCommandMap.get("Transfer").doCommand(new String[]{"Jars/logFilter.jar ","/home/training"});
-					System.out.println("Jars are currently being uploaded to hadoop");
-					viewCommandMap.get("Execute").doCommand(new String[]{"cd /home/training; hadoop jar logFilter.jar solution.LogFilter logFilterInput/input output"});
-					System.out.println("hadoop is running");
-					viewCommandMap.get("Execute").doCommand(new String[]{"hadoop fs -get output "+properties.getJobServerOutputFolderPath()});
-					System.out.println("Copy from hadoop the files to linux");
-					viewCommandMap.get("Get file").doCommand(new String[]{properties.getJobServerOutputFolderPath()+"/part-r-00000"});
-					viewCommandMap.get("Get file").doCommand(new String[]{properties.getJobServerOutputFolderPath()+"/_SUCCESS"});
-					System.out.println("FIles are at output folder.");
-				}
-				else
-				{
-					setUserCommand(1);
-					String[] params = {};
-					notifyObservers(params);
-				}
-				
-				//serverStatus.setText("Status: On.");
-				
+					serverStatus.setText("Status: On.");
+					startStopButton.setEnabled(false);
+					Thread t = new Thread(new Runnable() {
+						
+						@Override
+						public void run() {
+							try {
+								viewCommandMap.get("Connect").doCommand(new String[]{(properties.getHost()),(properties.getUserName()),(properties.getPassword())});
+								System.out.println("Connected!");
+								
+								viewCommandMap.get("Execute").doCommand(new String[]{"rm -Rf "+properties.getJobServerInputFolderPath()});
+								viewCommandMap.get("Execute").doCommand(new String[]{"rm -Rf "+properties.getJobServerOutputFolderPath()});
+								viewCommandMap.get("Execute").doCommand(new String[]{"hadoop fs -rmr output"});
+								System.out.println("Removed all folders");
+								viewCommandMap.get("Execute").doCommand(new String[]{"mkdir "+properties.getJobServerInputFolderPath()});
+								viewCommandMap.get("Execute").doCommand(new String[]{"cd "+properties.getJobServerInputFolderPath()});
+								File inputFolder = new File("input");
+								File[] listOfFiles = inputFolder.listFiles();
+								for(File log:listOfFiles)
+								{
+									viewCommandMap.get("Transfer").doCommand(new String[]{"input/"+log.getName(),properties.getJobServerInputFolderPath()});
+								}
+								System.out.println("Transferd files from input To: "+properties.getJobServerInputFolderPath());
+								viewCommandMap.get("Execute").doCommand(new String[]{"hadoop fs -mkdir logFilterInput"});
+								viewCommandMap.get("Execute").doCommand(new String[]{"hadoop fs -put "+properties.getJobServerInputFolderPath()+" logFilterInput"});
+								viewCommandMap.get("Execute").doCommand(new String[]{"cd /home/training/Desktop; "});
+								viewCommandMap.get("Transfer").doCommand(new String[]{"Jars/logFilter.jar ","/home/training"});
+								System.out.println("Jars are currently being uploaded to hadoop");
+								viewCommandMap.get("Execute").doCommand(new String[]{"cd /home/training; hadoop jar logFilter.jar solution.LogFilter logFilterInput/input output"});
+								System.out.println("hadoop is running");
+								viewCommandMap.get("Execute").doCommand(new String[]{"hadoop fs -get output "+properties.getJobServerOutputFolderPath()});
+								System.out.println("Copy from hadoop the files to linux");
+								viewCommandMap.get("Get file").doCommand(new String[]{properties.getJobServerOutputFolderPath()+"/part-r-00000"});
+								viewCommandMap.get("Get file").doCommand(new String[]{properties.getJobServerOutputFolderPath()+"/_SUCCESS"});
+								System.out.println("FIles are at output folder.");
+								Display.getDefault().asyncExec(new Runnable() {
+								    public void run() {
+										serverStatus.setText("Status: Off.");
+										startStopButton.setEnabled(true);
+								    }
+								});
+								
+							} catch (Exception e) {
+								System.out.println("Something went wrong!");
+							}
+						}
+					});
+					t.start();
 			}
 			
 			@Override
@@ -137,37 +141,13 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				properties.setHost(hostText.getText());
+				serverAddress.setText("Host:" +hostText.getText());
 			}
-			
 			@Override
 			public void widgetDefaultSelected(SelectionEvent arg0) {}
 		});
 		shell.layout();
 	}
-		
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	@Override
-	public void start() {
-		this.run();		
-	}
-
-	@Override
-	public void setCommands(HashMap<String, Command> viewCommandMap) {
-		this.viewCommandMap = viewCommandMap;
-	}
-
-	
 
 	@Override
 	public void errorNoticeToUser(String s) {
@@ -198,10 +178,21 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 		System.out.println(data.toString());
 		
 	}
-
 	
-
+	@Override
+	public void start() {
+		this.run();		
+	}
 	
+	public void exit(){
+		viewCommandMap.get("Exit").doCommand(new String[]{"Bye!"});
+		display.dispose(); // dispose OS components
+	}
+
+	@Override
+	public void setCommands(HashMap<String, Command> viewCommandMap) {
+		this.viewCommandMap = viewCommandMap;
+	}
 	
 	@Override
 	public HashMap<String, Command> getViewCommandMap() {
@@ -212,7 +203,6 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 	public void setCommandsMenu(String cliMenu) {
 		// TODO Auto-generated method stub
 	}
-	
 	
 	/**
 	 * This method create a button with the following parameters
@@ -329,24 +319,6 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 	private Combo createCombo(Composite parent, int style, String[] options, String placeholder){
 		return createCombo(parent, style, options, placeholder, 90, 20);
 	}
-	/**
-	 * Thie method changes the server button
-	 * @param status boolean represent the server status to set
-	 */
-	private void toggleServerStatus(boolean status){
-		if (!status){
-
-			serverIsOn = false; 
-			serverStatus.setText("Status: Off");
-			startStopButton.setText("Start Server");
-		}
-		else
-		{
-			serverIsOn = true; 
-			serverStatus.setText("Status: On");
-			startStopButton.setText("Stop Server");
-		}
-		
-	}
+	
 
 }
