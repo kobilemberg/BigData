@@ -72,7 +72,7 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 		Composite propertiesForm = new Composite(folder, SWT.NONE);
 		propertiesForm.setLayout(rowLayout);
 		propertiesTab.setControl(propertiesForm);
-		createLabel(propertiesForm, SWT.NONE, "host:", 110, 15);
+		createLabel(propertiesForm, SWT.NONE, "Host:", 110, 15);
 		hostText = createText(propertiesForm, SWT.SINGLE | SWT.BORDER, properties.getHost(), 147, 15);
 		createLabel(propertiesForm, SWT.NONE, "", 110, 10);
 		Button submitButton = createButton(propertiesForm, " Update    ", "Resources/save.png",160,30);

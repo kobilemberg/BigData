@@ -43,7 +43,7 @@ public class appDriver {
 		if(properties.getUI().equals("CLI"))
 			view = new MyView(new BufferedReader(new InputStreamReader(System.in)),(new PrintWriter(System.out)),properties);
 		else
-			view = new StockAnalystBasicWindow("Task 4", 188, 202, properties);
+			view = new StockAnalystBasicWindow("Task 4", 200, 181, properties);
 		
 		//Instantiate Presenter and Model
 		MyModel model = new MyModel();
