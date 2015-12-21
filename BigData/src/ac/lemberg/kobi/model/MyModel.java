@@ -30,10 +30,8 @@ public class MyModel extends Observable implements Model{
 	 * {@inheritDoc}
 	 */
 	public void executeCommand(String command) {
-		if(sshConnection!= null)
-		{
-			if(sshConnection.commandExecutorConnect())
-			{
+		if(sshConnection!= null){
+			if(sshConnection.commandExecutorConnect()){
 					data = sshConnection.sendCommand(command);
 			}
 			else

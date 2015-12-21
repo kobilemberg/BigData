@@ -28,6 +28,7 @@ public class appDriver {
 		XMLDecoder decoder=null;
 		Properties properties=null;
 		
+		//Reading properties file.
 		try 
 		{
 			decoder=new XMLDecoder(new BufferedInputStream(new FileInputStream("Settings/properties.xml")));
@@ -37,16 +38,20 @@ public class appDriver {
 		{
 			System.out.println("ERROR: File Settings/properties.xml not found");
 		}
-
+		
+		//Instantiate the view according to the properties file
 		if(properties.getUI().equals("CLI"))
 			view = new MyView(new BufferedReader(new InputStreamReader(System.in)),(new PrintWriter(System.out)),properties);
 		else
-			view = new StockAnalystBasicWindow("Stock Analyst ", 188, 202, properties);
-			
+			view = new StockAnalystBasicWindow("Task 4", 188, 202, properties);
+		
+		//Instantiate Presenter and Model
 		MyModel model = new MyModel();
 		Presenter presenter = new Presenter(view, model);
 		((Observable)view).addObserver(presenter);
 		model.addObserver(presenter);
+		
+		//Start the app.
 		view.start();
 	}
 

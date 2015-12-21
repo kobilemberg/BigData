@@ -1,12 +1,7 @@
 package ac.lemberg.kobi.view;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.HashMap;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -24,16 +19,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
-
 import ac.lemberg.kobi.presenter.Command;
 import ac.lemberg.kobi.properties.Properties;
-import ac.lemberg.kobi.ssh.SSHAdapter;
 
 public class StockAnalystBasicWindow extends BasicWindow implements View{
 	
 	HashMap<String, Command> viewCommandMap;
-	BufferedReader in;
-	PrintWriter out;
 	int userCommand=0;
 	Properties properties;
 	Label serverStatus;
@@ -43,6 +34,13 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 	Text hostText;
 	Combo maximumClients;
 	
+	/**
+	 * Instantiate a new StockAnalystBasicWindow.
+	 * @param title represent window title.
+	 * @param width represent window width.
+	 * @param height represent window height.
+	 * @param properties represent xml properties file.
+	 */
 	public StockAnalystBasicWindow(String title, int width, int height,Properties properties) {
 		super(title, width, height);
 		this.properties=properties;
@@ -51,6 +49,9 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 	
 
 	@Override
+	/**
+	 * {@inheritDoc}
+	 */
 	void initWidgets() {
 		shell.setLayout(new GridLayout(2, false));
 		TabFolder folder = new TabFolder(shell, SWT.NULL); 
@@ -87,45 +88,13 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 						
 						@Override
 						public void run() {
-							try {
-								viewCommandMap.get("Connect").doCommand(new String[]{(properties.getHost()),(properties.getUserName()),(properties.getPassword())});
-								System.out.println("Connected!");
-								
-								viewCommandMap.get("Execute").doCommand(new String[]{"rm -Rf "+properties.getJobServerInputFolderPath()});
-								viewCommandMap.get("Execute").doCommand(new String[]{"rm -Rf "+properties.getJobServerOutputFolderPath()});
-								viewCommandMap.get("Execute").doCommand(new String[]{"hadoop fs -rmr output"});
-								System.out.println("Removed all folders");
-								viewCommandMap.get("Execute").doCommand(new String[]{"mkdir "+properties.getJobServerInputFolderPath()});
-								viewCommandMap.get("Execute").doCommand(new String[]{"cd "+properties.getJobServerInputFolderPath()});
-								File inputFolder = new File("input");
-								File[] listOfFiles = inputFolder.listFiles();
-								for(File log:listOfFiles)
-								{
-									viewCommandMap.get("Transfer").doCommand(new String[]{"input/"+log.getName(),properties.getJobServerInputFolderPath()});
-								}
-								System.out.println("Transferd files from input To: "+properties.getJobServerInputFolderPath());
-								viewCommandMap.get("Execute").doCommand(new String[]{"hadoop fs -mkdir logFilterInput"});
-								viewCommandMap.get("Execute").doCommand(new String[]{"hadoop fs -put "+properties.getJobServerInputFolderPath()+" logFilterInput"});
-								viewCommandMap.get("Execute").doCommand(new String[]{"cd /home/training/Desktop; "});
-								viewCommandMap.get("Transfer").doCommand(new String[]{"Jars/logFilter.jar ","/home/training"});
-								System.out.println("Jars are currently being uploaded to hadoop");
-								viewCommandMap.get("Execute").doCommand(new String[]{"cd /home/training; hadoop jar logFilter.jar solution.LogFilter logFilterInput/input output"});
-								System.out.println("hadoop is running");
-								viewCommandMap.get("Execute").doCommand(new String[]{"hadoop fs -get output "+properties.getJobServerOutputFolderPath()});
-								System.out.println("Copy from hadoop the files to linux");
-								viewCommandMap.get("Get file").doCommand(new String[]{properties.getJobServerOutputFolderPath()+"/part-r-00000"});
-								viewCommandMap.get("Get file").doCommand(new String[]{properties.getJobServerOutputFolderPath()+"/_SUCCESS"});
-								System.out.println("FIles are at output folder.");
-								Display.getDefault().asyncExec(new Runnable() {
-								    public void run() {
-										serverStatus.setText("Status: Off.");
-										startStopButton.setEnabled(true);
-								    }
-								});
-								
-							} catch (Exception e) {
-								System.out.println("Something went wrong!");
-							}
+							remoteSolve();
+							Display.getDefault().asyncExec(new Runnable() {
+							    public void run() {
+									serverStatus.setText("Status: Off.");
+									startStopButton.setEnabled(true);
+							    }
+							});
 						}
 					});
 					t.start();
@@ -150,6 +119,9 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 	}
 
 	@Override
+	/**
+	 * {@inheritDoc}
+	 */
 	public void errorNoticeToUser(String s) {
 		Display.getDefault().asyncExec(new Runnable() {
 		    public void run() {
@@ -162,11 +134,17 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 	}
 
 	@Override
+	/**
+	 * {@inheritDoc}
+	 */
 	public int getUserCommand() {
 		return userCommand;
 	}
 
 	@Override
+	/**
+	 * {@inheritDoc}
+	 */
 	public void setUserCommand(int commandID) 
 	{
 		this.setChanged();
@@ -174,12 +152,18 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 	}
 
 	@Override
+	/**
+	 * {@inheritDoc}
+	 */
 	public void displayData(Object data) {
 		System.out.println(data.toString());
 		
 	}
 	
 	@Override
+	/**
+	 * {@inheritDoc}
+	 */
 	public void start() {
 		this.run();		
 	}
@@ -190,6 +174,9 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 	}
 
 	@Override
+	/**
+	 * {@inheritDoc}
+	 */
 	public void setCommands(HashMap<String, Command> viewCommandMap) {
 		this.viewCommandMap = viewCommandMap;
 	}
@@ -200,6 +187,9 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 	}
 	
 	@Override
+	/**
+	 * {@inheritDoc}
+	 */
 	public void setCommandsMenu(String cliMenu) {
 		// TODO Auto-generated method stub
 	}
@@ -207,7 +197,7 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 	/**
 	 * This method create a button with the following parameters
 	 * @param parent represent the Composite to being added to
-	 * @param text represent the text value of thr button
+	 * @param text represent the text value of the button
 	 * @param image represent the image that will be added to button
 	 * @return button
 	 */
@@ -221,7 +211,7 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 	/**
 	 * This method create a button with the following parameters
 	 * @param parent represent the Composite to being added to 
-	 * @param text represent the text value of thr button
+	 * @param text represent the text value of the button
 	 * @param image image represent the image that will be added to button
 	 * @param width represent the width
 	 * @param height represent the height
@@ -320,5 +310,69 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 		return createCombo(parent, style, options, placeholder, 90, 20);
 	}
 	
+	/**
+	 * This method will do the following:
+	 * 		Open new SSH connection with Hadoop job server.
+	 * 		Copy all files under "input" to "jobServerInputFolderPath" setted on Properties.xml
+	 * 		Copy job's jar located under "Jars" to Hadoop at /home/training/
+	 * 		Upload input files and the jar from the linux to cloudera Hadoop
+	 * 		Run the job
+	 * 		Copy from linux to windows the results. 
+	 */
+	public void remoteSolve()
+	{
+		try {
+			//Connecting to Hadoop host
+			viewCommandMap.get("Connect").doCommand(new String[]{(properties.getHost()),(properties.getUserName()),(properties.getPassword())});
+			System.out.println("Connected!");
+			
+			//Delete on the linux the input and output path to avoid errors.
+			viewCommandMap.get("Execute").doCommand(new String[]{"rm -Rf "+properties.getJobServerInputFolderPath()});
+			viewCommandMap.get("Execute").doCommand(new String[]{"rm -Rf "+properties.getJobServerOutputFolderPath()});
+			
+			//Delete the output folder from Hadoop fs to avoid errors.
+			viewCommandMap.get("Execute").doCommand(new String[]{"hadoop fs -rmr output"});
+			System.out.println("Removed all folders");
+			
+			//Creating a new input directory to copy the files from windows
+			viewCommandMap.get("Execute").doCommand(new String[]{"mkdir "+properties.getJobServerInputFolderPath()});
+			viewCommandMap.get("Execute").doCommand(new String[]{"cd "+properties.getJobServerInputFolderPath()});
+			
+			//For each file in windows transfer it to linux
+			File inputFolder = new File("input");
+			File[] listOfFiles = inputFolder.listFiles();
+			for(File log:listOfFiles)
+			{
+				viewCommandMap.get("Transfer").doCommand(new String[]{"input/"+log.getName(),properties.getJobServerInputFolderPath()});
+			}
+			System.out.println("Transferd files from input To: "+properties.getJobServerInputFolderPath());
+			
+			//Creating a new directory for the job and upload the input directory to the job folder 
+			viewCommandMap.get("Execute").doCommand(new String[]{"hadoop fs -mkdir logFilterInput"});
+			viewCommandMap.get("Execute").doCommand(new String[]{"hadoop fs -put "+properties.getJobServerInputFolderPath()+" logFilterInput"});
+			
+			//Copy the jar from windows 
+			viewCommandMap.get("Execute").doCommand(new String[]{"cd /home/training/Desktop; "});
+			viewCommandMap.get("Transfer").doCommand(new String[]{"Jars/logFilter.jar ","/home/training"});
+			System.out.println("Jars are currently being uploaded to hadoop");
+			
+			//Starting the job
+			viewCommandMap.get("Execute").doCommand(new String[]{"cd /home/training; hadoop jar logFilter.jar solution.LogFilter logFilterInput/input output"});
+			System.out.println("hadoop is running");
+			
+			//Copy results to linux
+			viewCommandMap.get("Execute").doCommand(new String[]{"hadoop fs -get output "+properties.getJobServerOutputFolderPath()});
+			System.out.println("Copy from hadoop the files to linux");
+			
+			//Copy results nack to windows
+			viewCommandMap.get("Get file").doCommand(new String[]{properties.getJobServerOutputFolderPath()+"/part-r-00000"});
+			viewCommandMap.get("Get file").doCommand(new String[]{properties.getJobServerOutputFolderPath()+"/_SUCCESS"});
+			System.out.println("FIles are at output folder.");
+			
+			
+		} catch (Exception e) {
+			System.out.println("Something went wrong!");
+		}
+	}
 
 }

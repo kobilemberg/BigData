@@ -4,6 +4,12 @@ import java.util.Observable;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
+/**
+ * @author Kobi Lemberg
+ * @version 1.0
+ * <h1> BasicWindow </h1>
+ * class represent a basic SWT window.
+ */
 
 public abstract class BasicWindow extends Observable implements Runnable {
 	
@@ -23,9 +29,7 @@ public abstract class BasicWindow extends Observable implements Runnable {
  		shell.setText(title);
  		
 	}
- 	/**
-	 * {@inheritDoc}
-	 */
+ 	
  	abstract void initWidgets();
 
 	@Override
