@@ -62,6 +62,12 @@ public class SSHAdapter {
 		}
 	}
 	
+	public Boolean isConnected(){
+		System.out.println(session.isConnected());
+		return session.isConnected();
+		
+	}
+	
 	/**
 	 * This method will open a command executer terminal to SSH server.
 	 * @return true if the terminal was opened properly.

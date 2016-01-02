@@ -16,12 +16,14 @@ public class MyModel extends Observable implements Model{
 	private SSHAdapter sshConnection;
 	private Object data;
 	private int modelCompletedCommand=0;
-
+	private boolean flag = false;
 	//Functionality
 	@Override
 	public void sshConnect(String host, String userName, String password) {
 		sshConnection = new SSHAdapter(userName, password, host);
 		data = "Connection has been created.";
+		flag = true;
+
 		setModelCommand(1);
 	}
 
@@ -99,7 +101,7 @@ public class MyModel extends Observable implements Model{
 	 * {@inheritDoc}
 	 */
 	public void exit() {
-		if(sshConnection!=null)
+		if(flag == true)
 			sshConnection.disconnect();
 		
 	}

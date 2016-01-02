@@ -1,11 +1,14 @@
 package ac.lemberg.kobi.view;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
@@ -19,8 +22,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
+
+import Decoders.excelReader;
+import Decoders.urlEncoder;
 import ac.lemberg.kobi.presenter.Command;
 import ac.lemberg.kobi.properties.Properties;
+import ac.lemberg.kobi.properties.userProperties;
 
 public class StockAnalystBasicWindow extends BasicWindow implements View{
 	
@@ -33,6 +40,7 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 	Button startStopButton;
 	Text hostText;
 	Combo maximumClients;
+	userProperties userProperties;
 	
 	/**
 	 * Instantiate a new StockAnalystBasicWindow.
@@ -41,9 +49,10 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 	 * @param height represent window height.
 	 * @param properties represent xml properties file.
 	 */
-	public StockAnalystBasicWindow(String title, int width, int height,Properties properties) {
+	public StockAnalystBasicWindow(String title, int width, int height,Properties properties,userProperties userProperties) {
 		super(title, width, height);
 		this.properties=properties;
+		this.userProperties = userProperties;
 	}
 	
 	
@@ -65,6 +74,24 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 		serverForm.setLayout(rowLayout);
 		serverTab.setControl(serverForm);
 		serverAddress = createLabel(serverForm, SWT.NULL, "Host:"+properties.getHost());
+		//Label numberOfStocks = new Label(serverForm, SWT.NULL);
+		//numberOfStocks.setText("Number of Stocks: ");
+		Label labelStocks = createLabel(serverForm, SWT.NONE, "Number of Stocks: ", 110, 15);
+		Text textStocks = createText(serverForm, SWT.SINGLE | SWT.BORDER, " ");
+		Label labelAnalyze = createLabel(serverForm, SWT.None, "Days backwards: ",110,15);
+		Text textAnalyze = createText(serverForm, SWT.SINGLE | SWT.BORDER, " ");
+		Label labelFeature = createLabel(serverForm, SWT.None, "Features analyze: ",110,15);
+		Button buttonOpen = new Button(serverForm, SWT.CHECK);
+		buttonOpen.setText("Open");
+		Button buttonHigh = new Button(serverForm, SWT.CHECK);
+		buttonHigh.setText("High");
+		Button buttonLow = new Button(serverForm, SWT.CHECK);
+		buttonLow.setText("Low");
+		Button buttonClose = new Button(serverForm, SWT.CHECK);
+		buttonClose.setText("Close");
+		Label labelCluster = createLabel(serverForm, SWT.NONE, "Clusters: ", 110, 15);
+		Text textCluster = createText(serverForm, SWT.SINGLE | SWT.BORDER, " ");
+		createLabel(serverForm, SWT.NONE, "Host:", 110, 15);
 		serverStatus = createLabel(serverForm, SWT.NULL , "Job Status: Off");
 		startStopButton = createButton(serverForm, "Start job", "Resources/power.png",160,30);
 		TabItem propertiesTab = new TabItem(folder, SWT.NULL);
@@ -72,36 +99,106 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 		Composite propertiesForm = new Composite(folder, SWT.NONE);
 		propertiesForm.setLayout(rowLayout);
 		propertiesTab.setControl(propertiesForm);
-		createLabel(propertiesForm, SWT.NONE, "Host:", 110, 15);
+		
+		
+		
+		//check if it work!
+		try {
+			urlEncoder urlenc = new urlEncoder(2);
+			urlenc.connectAndRead(userProperties.getUrlGetData());
+			
+			excelReader exel = new excelReader("C:/csvoutput.csv");
+			ArrayList<String> menayotcsv = urlenc.getMenayotcsv();
+			menayotcsv.remove(0);
+			exel.generateCsvFile();
+			for (int i = 0; i < menayotcsv.size(); i++) {
+				exel.read(userProperties.getCsvFilesPath()+"/"+menayotcsv.get(i).toString());
+			}
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		///////
+		///
+		//////
+		//createLabel(propertiesForm,SWT.NONE,"Number of Stocks: ",110,15);
+		//Text stockTest = createText(propertiesForm, SWT.SINGLE | SWT.BORDER, properties.getHost(), 147, 15);
 		hostText = createText(propertiesForm, SWT.SINGLE | SWT.BORDER, properties.getHost(), 147, 15);
 		createLabel(propertiesForm, SWT.NONE, "", 110, 10);
 		Button submitButton = createButton(propertiesForm, " Update    ", "Resources/save.png",160,30);
 		
-		/* What happens when a user clicks "[Start/Stop Server]". */ 
+		/* What happens when a user clicks "[Start/Stop Job]". */ 
 		startStopButton.addSelectionListener(new SelectionListener() {
 			
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 					serverStatus.setText("Status: On.");
-					startStopButton.setEnabled(false);
-					Thread t = new Thread(new Runnable() {
-						
-						@Override
-						public void run() {
-							remoteSolve();
-							Display.getDefault().asyncExec(new Runnable() {
-							    public void run() {
-									serverStatus.setText("Status: Off.");
-									startStopButton.setEnabled(true);
-							    }
+
+					if (startStopButton.getText().toString().equals("Start job"))
+					{
+						if (!textStocks.getText().trim().isEmpty() && !textAnalyze.getText().trim().isEmpty() && !textCluster.getText().trim().isEmpty())
+						{
+							Integer numberOfStocks = new Integer(new String(textStocks.getText()).trim());
+							Integer analyze = new Integer(new String(textAnalyze.getText()).trim());
+							Integer cluster = new Integer(new String(textCluster.getText()).trim());
+					
+							boolean open = buttonOpen.getSelection();
+							boolean high = buttonHigh.getSelection();
+							boolean close = buttonClose.getSelection();
+							boolean low = buttonLow.getSelection();
+					
+							startStopButton.setText("Stop job");
+							startStopButton.setEnabled(true);
+							Thread t = new Thread(new Runnable() {
+								@Override
+								public void run() 
+								{
+									remoteSolve(numberOfStocks,analyze,cluster,open,high,close,low);
+									Display.getDefault().asyncExec(new Runnable() 
+									{
+										public void run() 
+										{
+											serverStatus.setText("Status: On.");
+											startStopButton.setEnabled(true);
+										}
+									});
+								}
 							});
+							t.start();
 						}
-					});
-					t.start();
-			}
+						else
+						{
+							MessageBox messageBox = new MessageBox(shell, SWT.ICON_WARNING | SWT.ABORT | SWT.RETRY | SWT.IGNORE);
+					        messageBox.setText("Warning");
+					        messageBox.setMessage("Fill All the Board!");
+					        messageBox.open();
+						}
+					}
+					else if (startStopButton.getText().toString().equals("Stop job"))
+					{
+						startStopButton.setText("Start job");
+						Thread t = new Thread(new Runnable() {	
+							@Override
+							public void run() {
+								//remoteSolve();
+								disconnect();
+								Display.getDefault().asyncExec(new Runnable() {
+									public void run() {
+										serverStatus.setText("Status: Off.");
+										startStopButton.setEnabled(true);
+									}
+								});
+							}
+						});
+						t.start();
+					}
+				}
+					
 			
-			@Override
-			public void widgetDefaultSelected(SelectionEvent arg0) {}
+				@Override
+				public void widgetDefaultSelected(SelectionEvent arg0) {}
 		});
 		
 		/* What happens when a user clicks "[Update]". */ 
@@ -202,7 +299,7 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 	 * @return button
 	 */
 	private Button createButton(Composite parent, String text, String image) {
-	    Button button = new Button(parent, SWT.PUSH);
+	    Button button = new Button(parent, SWT.TOGGLE);
 	    button.setImage(new Image(Display.getCurrent(), image));
 	    button.setLayoutData(new RowData(120, 30));
 	    button.setText(text);	    
@@ -310,6 +407,12 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 		return createCombo(parent, style, options, placeholder, 90, 20);
 	}
 	
+	public void disconnect()
+	{
+		//String[] a = {"a","b","c"};
+		viewCommandMap.get("Exit").doCommand(new String[] {"null"});
+	}
+	
 	/**
 	 * This method will do the following:
 	 * 		Open new SSH connection with Hadoop job server.
@@ -319,8 +422,11 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 	 * 		Run the job
 	 * 		Copy from linux to windows the results. 
 	 */
-	public void remoteSolve()
+	
+	
+	public void remoteSolve(int numberOfStocks, int analyze, int cluters,boolean open, boolean high, boolean low, boolean close)
 	{
+		
 		try {
 			//Connecting to Hadoop host
 			viewCommandMap.get("Connect").doCommand(new String[]{(properties.getHost()),(properties.getUserName()),(properties.getPassword())});

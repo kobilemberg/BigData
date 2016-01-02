@@ -196,6 +196,7 @@ public class Presenter implements Observer {
 
 		else if(o==model)
 		{
+			
 			int modelCompletedNum = model.getModelCompletedCommand();
 			if(modelCompletedNum!=-1)
 				view.displayData(model.getData());
