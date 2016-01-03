@@ -47,14 +47,19 @@ public class urlEncoder {
 			{
 				String fileName = menayot.get(i)+".csv";
 				menayotcsv.add(fileName);
-				urlDecoder urldec = new urlDecoder(fileName);
-				urldec.Read("http://ichart.yahoo.com/table.csv?s="+menayot.get(i), "C:/Users/nir/Desktop/csvFiles/");
+				urlDecoder urldec = new urlDecoder();
+				System.out.println("Downloading File From path -->"+"http://ichart.yahoo.com/table.csv?s="+menayot.get(i));
+				System.out.println("to--> C:/Users/nir/Desktop/csvFiles/");
+				urldec.generateCsvFile( "C:/Users/nir/Desktop/csvFiles/output.csv");
+				urldec.Read("http://ichart.yahoo.com/table.csv?s="+menayot.get(i), "C:/Users/nir/Desktop/csvFiles/output.csv");
+				urldec.readFromcsv("C:/Users/nir/Desktop/csvFiles/output.csv");
 			}
 		}
 
 		public ArrayList<String> getMenayotcsv() {
 			return menayotcsv;
 		}
+
 
 
 	}

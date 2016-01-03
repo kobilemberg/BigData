@@ -80,6 +80,20 @@ public class Presenter implements Observer {
 				}
 			});
 			
+			viewCommandMap.put("Analyze", new Command() {
+				
+				@Override
+				public void doCommand(String[] args) {
+					try {
+						view.setUserCommand(5);
+						((Observable)view).notifyObservers(args);
+					} catch (Exception e) {
+						e.printStackTrace();
+						}
+					
+				}
+			});
+			
 			
 			
 			viewCommandMap.put("Exit",new Command() 
@@ -180,6 +194,13 @@ public class Presenter implements Observer {
 			case 4:
 				try {
 					model.getFIleByName(argArr[0]);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				break;
+			case 5:
+				try {
+					model.analyzeData(argArr[0],argArr[1],argArr[2],argArr[3],argArr[4],argArr[5],argArr[6],argArr[7],argArr[8]);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

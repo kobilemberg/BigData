@@ -8,7 +8,12 @@ package ac.lemberg.kobi.model;
  */
  
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Observable;
+
+import Decoders.urlEncoder;
+import ac.lemberg.kobi.properties.userProperties;
 import ac.lemberg.kobi.ssh.SSHAdapter;
 
 
@@ -126,6 +131,33 @@ public class MyModel extends Observable implements Model{
 		this.setChanged();
 		modelCompletedCommand = commandNum;
 		notifyObservers();
+	}
+
+	@Override
+	public void analyzeData(String csvFilesPath,String urlData,String numberOfStocks, String analyze, String clusters, String open, String high,
+			String low, String close) {
+		Integer numberStocks = new Integer(numberOfStocks);
+		Integer numberAnalyze = new Integer(analyze);
+		Integer numberOfClusters = new Integer(clusters);
+		boolean openBoolean = new Boolean(open);
+		boolean highBoolean = new Boolean(high);
+		boolean lowBoolean = new Boolean(low);
+		boolean closeBoolean = new Boolean(close);
+		//check if it work!
+				try {
+					urlEncoder urlenc = new urlEncoder(numberStocks);
+					urlenc.connectAndRead(urlData);	
+					ArrayList<String> menayotcsv = urlenc.getMenayotcsv();
+					menayotcsv.remove(0);
+					for (int i = 0; i < menayotcsv.size(); i++) {
+						System.out.println(csvFilesPath+"/"+menayotcsv.get(i).toString());						
+					}
+				
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				System.out.println("Finished!");
 	}
 	
 

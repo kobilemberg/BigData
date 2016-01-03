@@ -23,7 +23,6 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 
-import Decoders.excelReader;
 import Decoders.urlEncoder;
 import ac.lemberg.kobi.presenter.Command;
 import ac.lemberg.kobi.properties.Properties;
@@ -102,23 +101,6 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 		
 		
 		
-		//check if it work!
-		try {
-			urlEncoder urlenc = new urlEncoder(2);
-			urlenc.connectAndRead(userProperties.getUrlGetData());
-			
-			excelReader exel = new excelReader("C:/csvoutput.csv");
-			ArrayList<String> menayotcsv = urlenc.getMenayotcsv();
-			menayotcsv.remove(0);
-			exel.generateCsvFile();
-			for (int i = 0; i < menayotcsv.size(); i++) {
-				exel.read(userProperties.getCsvFilesPath()+"/"+menayotcsv.get(i).toString());
-			}
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
 		///////
 		///
@@ -424,10 +406,22 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 	 */
 	
 	
-	public void remoteSolve(int numberOfStocks, int analyze, int cluters,boolean open, boolean high, boolean low, boolean close)
+	public void remoteSolve(int numberOfStocks, int analyze, int clusters,boolean open, boolean high, boolean low, boolean close)
 	{
 		
 		try {
+			/*
+			 * 	Adj Close
+			 * Volume
+			 * Close
+			 * Low
+			 * High
+			 * Open
+			 * Date
+			 */
+			System.out.println(userProperties.getCsvFilesPath()+" , "+userProperties.getUrlGetData());
+			viewCommandMap.get("Analyze").doCommand(new String[]{userProperties.getCsvFilesPath(),userProperties.getUrlGetData(),numberOfStocks+"",analyze+"",clusters+"",open+"",high+"",low+"",close+""});
+			System.out.println("Analyzed the Data!");
 			//Connecting to Hadoop host
 			viewCommandMap.get("Connect").doCommand(new String[]{(properties.getHost()),(properties.getUserName()),(properties.getPassword())});
 			System.out.println("Connected!");
