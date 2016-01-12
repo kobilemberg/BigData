@@ -171,7 +171,7 @@ public class SSHAdapter {
 		{
 			File file = new File(filePath);
 			//file.getName() is adding " " so we need to delete this suffix
-			String newFileName = file.getName().substring(0, file.getName().length()-1);
+			String newFileName = file.getName().substring(0, file.getName().length());
 			sftpChannel.cd(path);
 			sftpChannel.put(new FileInputStream(file),newFileName);
 			return true;

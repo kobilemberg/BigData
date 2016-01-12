@@ -40,11 +40,9 @@ public class URLStockHandler {
 		}
 		
 		
-		public void getAllstockSymbols(String stocksURL)throws IOException
+		public void getAllstockSymbols(String nasdaqListedPath)throws IOException
 		{
-			
-			URLConnection urlOfStocksSymbol = new URL(stocksURL).openConnection();
-			BufferedReader in = new BufferedReader(new FileReader("input/stocks/nasdaqlisted.txt"));
+			BufferedReader in = new BufferedReader(new FileReader(nasdaqListedPath));
 			String fileInputLine;
 			int counter=0;
 			while (((fileInputLine = in.readLine()) != null)&&counter<stocksAmount) 
@@ -72,10 +70,10 @@ public class URLStockHandler {
 		}
 		
         
-		public HashMap<String, Stock> connectAndReadStocks(String stocksURL) throws IOException
+		public HashMap<String, Stock> connectAndReadStocks(String nasdaqListedPath) throws IOException
 		{
 			/*Insert only needed stock symbols from URL into stocksNameArr*/
-			getAllstockSymbols(stocksURL);
+			getAllstockSymbols(nasdaqListedPath);
 			
 			/*For each stock symbol*/
 			for (int stockNameIndex = 0; stockNameIndex < stocksNameArr.size(); stockNameIndex++)

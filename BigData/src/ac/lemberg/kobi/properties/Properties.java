@@ -11,13 +11,28 @@ public class Properties implements Serializable{
 	private int port;
 	private String userName;
 	private String password;
-	private String jobServerInputFolderPath;
-	private String jobServerOutputFolderPath;
+	private String csvFilePathForStockSymbols;
+
 
 	
 	public Properties() {
 		super();
 	}
+
+
+
+	public Properties(String uI, String host, int port, String userName, String password,
+			String csvFilePathForStockSymbols) {
+		super();
+		UI = uI;
+		this.host = host;
+		this.port = port;
+		this.userName = userName;
+		this.password = password;
+		this.csvFilePathForStockSymbols = csvFilePathForStockSymbols;
+	}
+
+
 
 	/**
 	 * @return the uI
@@ -26,12 +41,16 @@ public class Properties implements Serializable{
 		return UI;
 	}
 
+
+
 	/**
 	 * @param uI the uI to set
 	 */
 	public void setUI(String uI) {
 		UI = uI;
 	}
+
+
 
 	/**
 	 * @return the host
@@ -40,47 +59,7 @@ public class Properties implements Serializable{
 		return host;
 	}
 
-	
 
-	public Properties(String uI, String host, int port, String userName, String password,
-			String jobServerInputFolderPath, String jobServerOutputFolderPath) {
-		super();
-		UI = uI;
-		this.host = host;
-		this.port = port;
-		this.userName = userName;
-		this.password = password;
-		this.jobServerInputFolderPath = jobServerInputFolderPath;
-		this.jobServerOutputFolderPath = jobServerOutputFolderPath;
-	}
-
-	/**
-	 * @return the jobServerInputFolderPath
-	 */
-	public String getJobServerInputFolderPath() {
-		return jobServerInputFolderPath;
-	}
-
-	/**
-	 * @param jobServerInputFolderPath the jobServerInputFolderPath to set
-	 */
-	public void setJobServerInputFolderPath(String jobServerInputFolderPath) {
-		this.jobServerInputFolderPath = jobServerInputFolderPath;
-	}
-
-	/**
-	 * @return the jobServerOutputFolderPath
-	 */
-	public String getJobServerOutputFolderPath() {
-		return jobServerOutputFolderPath;
-	}
-
-	/**
-	 * @param jobServerOutputFolderPath the jobServerOutputFolderPath to set
-	 */
-	public void setJobServerOutputFolderPath(String jobServerOutputFolderPath) {
-		this.jobServerOutputFolderPath = jobServerOutputFolderPath;
-	}
 
 	/**
 	 * @param host the host to set
@@ -89,12 +68,16 @@ public class Properties implements Serializable{
 		this.host = host;
 	}
 
+
+
 	/**
 	 * @return the port
 	 */
 	public int getPort() {
 		return port;
 	}
+
+
 
 	/**
 	 * @param port the port to set
@@ -103,12 +86,16 @@ public class Properties implements Serializable{
 		this.port = port;
 	}
 
+
+
 	/**
 	 * @return the userName
 	 */
 	public String getUserName() {
 		return userName;
 	}
+
+
 
 	/**
 	 * @param userName the userName to set
@@ -117,6 +104,8 @@ public class Properties implements Serializable{
 		this.userName = userName;
 	}
 
+
+
 	/**
 	 * @return the password
 	 */
@@ -124,12 +113,34 @@ public class Properties implements Serializable{
 		return password;
 	}
 
+
+
 	/**
 	 * @param password the password to set
 	 */
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
+
+
+	/**
+	 * @return the csvFilePathForStockSymbols
+	 */
+	public String getCsvFilePathForStockSymbols() {
+		return csvFilePathForStockSymbols;
+	}
+
+
+
+	/**
+	 * @param csvFilePathForStockSymbols the csvFilePathForStockSymbols to set
+	 */
+	public void setCsvFilePathForStockSymbols(String csvFilePathForStockSymbols) {
+		this.csvFilePathForStockSymbols = csvFilePathForStockSymbols;
+	}
+
+
 
 	/**
 	 * @return the serialversionuid

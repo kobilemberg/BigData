@@ -1,14 +1,10 @@
 package ac.lemberg.kobi.view;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
@@ -22,11 +18,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
-
 import ac.lemberg.kobi.presenter.Command;
 import ac.lemberg.kobi.properties.Properties;
-import ac.lemberg.kobi.properties.userProperties;
-import ac.lemberg.kobi.stocks.URLStockHandler;
 
 public class StockAnalystBasicWindow extends BasicWindow implements View{
 	
@@ -39,7 +32,7 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 	Button startStopButton;
 	Text hostText;
 	Combo maximumClients;
-	userProperties userProperties;
+
 	
 	/**
 	 * Instantiate a new StockAnalystBasicWindow.
@@ -48,14 +41,14 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 	 * @param height represent window height.
 	 * @param properties represent xml properties file.
 	 */
-	public StockAnalystBasicWindow(String title, int width, int height,Properties properties,userProperties userProperties) {
+	public StockAnalystBasicWindow(String title, int width, int height,Properties properties) {
 		super(title, width, height);
 		this.properties=properties;
-		this.userProperties = userProperties;
 	}
 	
 	
 
+	@SuppressWarnings("unused")
 	@Override
 	/**
 	 * {@inheritDoc}
@@ -122,9 +115,13 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 					{
 						if (!textStocks.getText().trim().isEmpty() && !textAnalyze.getText().trim().isEmpty() && !textCluster.getText().trim().isEmpty())
 						{
-							Integer numberOfStocks = new Integer(new String(textStocks.getText()).trim());
-							Integer analyze = new Integer(new String(textAnalyze.getText()).trim());
-							Integer cluster = new Integer(new String(textCluster.getText()).trim());
+							int numberOfStocks = new Integer(new String(textStocks.getText()).trim()).intValue();
+
+							
+							int analyze = new Integer(new String(textAnalyze.getText()).trim()).intValue();
+							
+							int cluster = new Integer(new String(textCluster.getText()).trim()).intValue();
+							
 					
 							boolean open = buttonOpen.getSelection();
 							boolean high = buttonHigh.getSelection();
@@ -419,8 +416,7 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 			 * Open
 			 * Date
 			 */
-			System.out.println(userProperties.getCsvFilesPath()+" , "+userProperties.getUrlGetData());
-			viewCommandMap.get("Analyze").doCommand(new String[]{userProperties.getCsvFilesPath(),userProperties.getUrlGetData(),numberOfStocks+"",analyze+"",clusters+"",open+"",high+"",low+"",close+""});
+			viewCommandMap.get("Analyze").doCommand(new String[]{numberOfStocks+"",analyze+"",clusters+"",open+"",high+"",low+"",close+""});
 			System.out.println("Analyzed the Data!");
 			//Connecting to Hadoop host
 			/*viewCommandMap.get("Connect").doCommand(new String[]{(properties.getHost()),(properties.getUserName()),(properties.getPassword())});

@@ -200,7 +200,7 @@ public class Presenter implements Observer {
 				break;
 			case 5:
 				try {
-					model.analyzeData(argArr[0],argArr[1],argArr[2],argArr[3],argArr[4],argArr[5],argArr[6],argArr[7],argArr[8]);
+					model.analyzeData(argArr[0],argArr[1],argArr[2],argArr[3],argArr[4],argArr[5],argArr[6]);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

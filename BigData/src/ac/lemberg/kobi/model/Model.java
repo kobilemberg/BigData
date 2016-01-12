@@ -51,7 +51,7 @@ public interface Model {
 	 * @return model command id
 	 */
 	public int getModelCompletedCommand();
-	public void analyzeData(String csvFilesPath,String urlData,String numberOfStocks, String analyze, String clusters, String open, String high,
+	public void analyzeData(String numberOfStocks, String analyze, String clusters, String open, String high,
 			String low, String close) ;
 	
 

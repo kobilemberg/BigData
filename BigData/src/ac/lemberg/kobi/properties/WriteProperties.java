@@ -9,13 +9,13 @@ public class WriteProperties {
 	public static void main(String[] args) {
 		try {
 			XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream("Settings/properties.xml")));
-			encoder.writeObject(new Properties("GUI", "127.0.0.1", 22, "training", "training","/home/training/input","/home/training/output"));
+			Properties p = new Properties("GUI", "127.0.0.1",22, "training", "training", "input/stocks/vectors.csv");
+			HadoopProperties hp = new HadoopProperties("/home/training/input","/home/training/output",4,50,100,"input/stock/stocks.csv",7,true,true,true,true);
+			encoder.writeObject(p);
 			encoder.close();
-			
-			XMLEncoder encoder2 = new XMLEncoder(new BufferedOutputStream(new FileOutputStream("Settings/userProperties.xml")));
-			encoder2.writeObject(new userProperties("C:/csvFiles",
-					"ftp://ftp.nasdaqtrader.com/symboldirectory/nasdaqlisted.txt"));
-			encoder2.close();
+			encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream("Settings/HadoopProperties.xml")));
+			encoder.writeObject(hp);
+			encoder.close();
 		} catch (Exception e) {
 			System.out.println("problem with writing XML");
 		}

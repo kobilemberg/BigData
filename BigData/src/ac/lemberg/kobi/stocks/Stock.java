@@ -2,6 +2,7 @@ package ac.lemberg.kobi.stocks;
 
 import java.util.Arrays;
 
+@SuppressWarnings("rawtypes")
 public class Stock implements Vector{
 	
 	String name;
