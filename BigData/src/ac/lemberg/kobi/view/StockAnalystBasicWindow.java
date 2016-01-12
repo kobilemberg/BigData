@@ -342,7 +342,7 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 	    return text; 
 	}
 	
-	@SuppressWarnings("unused")
+
 	/**
 	 * This method will create text box with\by the following values
 	 * @param parent represent the composite to be added to

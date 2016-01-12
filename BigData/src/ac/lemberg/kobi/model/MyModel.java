@@ -8,7 +8,7 @@ package ac.lemberg.kobi.model;
  */
  
 
-import java.awt.print.Book;
+
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.BufferedInputStream;
