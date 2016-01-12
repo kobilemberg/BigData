@@ -8,13 +8,25 @@ package ac.lemberg.kobi.model;
  */
  
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.time.chrono.MinguoChronology;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Observable;
 
-import Decoders.urlEncoder;
+import com.opencsv.CSVWriter;
+
 import ac.lemberg.kobi.properties.userProperties;
 import ac.lemberg.kobi.ssh.SSHAdapter;
+import ac.lemberg.kobi.stocks.MinMaxNormalizer;
+import ac.lemberg.kobi.stocks.Stock;
+import ac.lemberg.kobi.stocks.URLStockHandler;
+import ac.lemberg.kobi.stocks.Vector;
 
 
 public class MyModel extends Observable implements Model{
@@ -134,25 +146,58 @@ public class MyModel extends Observable implements Model{
 	}
 
 	@Override
-	public void analyzeData(String csvFilesPath,String urlData,String numberOfStocks, String analyze, String clusters, String open, String high,
-			String low, String close) {
+	public void analyzeData(String csvFilesPath,String urlData,String numberOfStocks, String analyze, String clusters, String open, String high,String low, String close) {
 		Integer numberStocks = new Integer(numberOfStocks);
 		Integer numberAnalyze = new Integer(analyze);
 		Integer numberOfClusters = new Integer(clusters);
-		boolean openBoolean = new Boolean(open);
-		boolean highBoolean = new Boolean(high);
-		boolean lowBoolean = new Boolean(low);
-		boolean closeBoolean = new Boolean(close);
+		
+		ArrayList<String> features= new ArrayList<String>();
+		if(open.equals("true"))
+			features.add("OPEN");
+		if(high.equals("true"))
+			features.add("HIGH");
+		if(low.equals("true"))
+			features.add("LOW");
+		if(close.equals("true"))
+			features.add("CLOSE");
+		
+		
+		
 		//check if it work!
 				try {
-					urlEncoder urlenc = new urlEncoder(numberStocks);
-					urlenc.connectAndRead(urlData);	
-					ArrayList<String> menayotcsv = urlenc.getMenayotcsv();
-					menayotcsv.remove(0);
-					for (int i = 0; i < menayotcsv.size(); i++) {
-						System.out.println(csvFilesPath+"/"+menayotcsv.get(i).toString());						
+					
+					URLStockHandler urlStockHandler = new URLStockHandler(new Integer(numberOfStocks), new Integer(analyze),(String[])features.toArray(new String[features.size()]));
+					HashMap<String, Stock> stocksMap = urlStockHandler.connectAndReadStocks(urlData);
+					for(Stock s: (stocksMap.values()) )
+					{
+						s.setVctor(s.getAlldaysFeatures());
+
 					}
-				
+					MinMaxNormalizer minMax= new MinMaxNormalizer();
+					minMax.normalizeData(stocksMap.values(), 100.0, 0.0);
+					for(Stock s: (stocksMap.values()) )
+					{
+						System.out.println(s.toFullString());
+					}
+					
+					File folder = new File(csvFilesPath);
+					if((folder.exists()&&folder.isDirectory()))
+					{
+						{
+							String strOfDir ="Files and Directories in: "+csvFilesPath+"\n";
+							for (String fileOrDirectory: folder.list()){strOfDir+=fileOrDirectory+"\n";}
+							System.out.println(strOfDir);
+						}
+					}
+					CSVWriter csvWriter = new CSVWriter(new FileWriter(csvFilesPath+"/vectors.csv"), ',' );
+					for(Stock s: (stocksMap.values()) )
+					{
+						System.out.println(s.getVectorString());
+						csvWriter.writeNext(s.getVectorString().split(","));
+					}
+					csvWriter.close();
+
+		
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

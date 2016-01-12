@@ -2,7 +2,7 @@
 <java version="1.8.0_65" class="java.beans.XMLDecoder">
  <object class="ac.lemberg.kobi.properties.userProperties">
   <void property="csvFilesPath">
-   <string>C:\Users\nir\Desktop\csvFiles</string>
+   <string>input/stocks</string>
   </void>
   <void property="urlGetData">
    <string>ftp://ftp.nasdaqtrader.com/symboldirectory/nasdaqlisted.txt</string>

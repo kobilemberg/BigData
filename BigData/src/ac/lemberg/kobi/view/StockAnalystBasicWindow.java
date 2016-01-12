@@ -23,10 +23,10 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 
-import Decoders.urlEncoder;
 import ac.lemberg.kobi.presenter.Command;
 import ac.lemberg.kobi.properties.Properties;
 import ac.lemberg.kobi.properties.userProperties;
+import ac.lemberg.kobi.stocks.URLStockHandler;
 
 public class StockAnalystBasicWindow extends BasicWindow implements View{
 	
@@ -137,7 +137,7 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 								@Override
 								public void run() 
 								{
-									remoteSolve(numberOfStocks,analyze,cluster,open,high,close,low);
+									remoteSolve(numberOfStocks,analyze,cluster,open,high,low,close);
 									Display.getDefault().asyncExec(new Runnable() 
 									{
 										public void run() 
@@ -423,7 +423,7 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 			viewCommandMap.get("Analyze").doCommand(new String[]{userProperties.getCsvFilesPath(),userProperties.getUrlGetData(),numberOfStocks+"",analyze+"",clusters+"",open+"",high+"",low+"",close+""});
 			System.out.println("Analyzed the Data!");
 			//Connecting to Hadoop host
-			viewCommandMap.get("Connect").doCommand(new String[]{(properties.getHost()),(properties.getUserName()),(properties.getPassword())});
+			/*viewCommandMap.get("Connect").doCommand(new String[]{(properties.getHost()),(properties.getUserName()),(properties.getPassword())});
 			System.out.println("Connected!");
 			
 			//Delete on the linux the input and output path to avoid errors.
@@ -467,7 +467,7 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 			//Copy results nack to windows
 			viewCommandMap.get("Get file").doCommand(new String[]{properties.getJobServerOutputFolderPath()+"/part-r-00000"});
 			viewCommandMap.get("Get file").doCommand(new String[]{properties.getJobServerOutputFolderPath()+"/_SUCCESS"});
-			System.out.println("FIles are at output folder.");
+			System.out.println("FIles are at output folder.");*/
 			
 			
 		} catch (Exception e) {

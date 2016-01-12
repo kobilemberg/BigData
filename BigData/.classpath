@@ -5,5 +5,7 @@
 	<classpathentry kind="lib" path="Jars/jsch-0.1.53.jar"/>
 	<classpathentry kind="lib" path="Jars/swt.jar"/>
 	<classpathentry kind="lib" path="Jars/logFilter.jar"/>
+	<classpathentry kind="lib" path="opencsv-3.6.jar"/>
+	<classpathentry kind="lib" path="Jars/guava-18.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
