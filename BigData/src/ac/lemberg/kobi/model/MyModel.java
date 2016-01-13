@@ -170,26 +170,6 @@ public class MyModel extends Observable implements Model{
 	@Override
 	public void analyzeData(String numberOfStocks, String analyze, String clusters, String open, String high,String low, String close) {
 		
-		
-		/*Setting user changes in hadoopProperties file*/
-		hadoopProperties.setNumOfStocks(new Integer(numberOfStocks));
-		hadoopProperties.setNumOfDays(new Integer(analyze));
-		hadoopProperties.setNumOfClusters(new Integer(clusters));
-		hadoopProperties.setOpen(new Boolean(open));
-		hadoopProperties.setClose(new Boolean(close));
-		hadoopProperties.setHigh(new Boolean(high));
-		hadoopProperties.setLow(new Boolean(low));
-		
-		/*Writing Hadoop properties*/
-		try {
-			XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream("Settings/HadoopProperties.xml")));
-			encoder.writeObject(hadoopProperties);
-			encoder.close();
-		} catch (Exception e) {
-			System.out.println("problem with writing XML");
-		}
-		
-		
 		/*Prepering features array for stock filter*/
 		ArrayList<String> features= new ArrayList<String>();
 		if(open.equals("true"))
@@ -202,6 +182,27 @@ public class MyModel extends Observable implements Model{
 			features.add("CLOSE");
 		
 
+		
+		/*Setting user changes in hadoopProperties file*/
+		hadoopProperties.setNumOfStocks(new Integer(numberOfStocks));
+		hadoopProperties.setNumOfDays(new Integer(analyze));
+		hadoopProperties.setNumOfClusters(new Integer(clusters));
+		hadoopProperties.setOpen(new Boolean(open));
+		hadoopProperties.setClose(new Boolean(close));
+		hadoopProperties.setHigh(new Boolean(high));
+		hadoopProperties.setLow(new Boolean(low));
+		hadoopProperties.setNumOfFeatures(features.size());
+		
+		/*Writing Hadoop properties*/
+		try {
+			XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream("Settings/HadoopProperties.xml")));
+			encoder.writeObject(hadoopProperties);
+			encoder.close();
+		} catch (Exception e) {
+			System.out.println("problem with writing XML");
+		}
+		
+		
 		
 		
 		//check if it work!
