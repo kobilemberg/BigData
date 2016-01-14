@@ -192,7 +192,7 @@ public class MyModel extends Observable implements Model{
 		hadoopProperties.setHigh(new Boolean(high));
 		hadoopProperties.setLow(new Boolean(low));
 		hadoopProperties.setNumOfFeatures(features.size());
-		
+		hadoopProperties.setJobServerInputFolderPath("/home/training");
 		/*Writing Hadoop properties*/
 		try {
 			XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream("Settings/HadoopProperties.xml")));
@@ -236,8 +236,10 @@ public class MyModel extends Observable implements Model{
 					/*Connecting to cloudera hadoop and transfering files*/
 					System.out.println("Connected!");
 					sshConnect(this.userProperties.getHost(), this.userProperties.getUserName(), this.userProperties.getPassword());
+					executeCommand("mv /home/training/hadoopProperties.xml ; mv /home/training/vectors.csv"); 
 					transferFile("Settings/HadoopProperties.xml", "/home/training");
 					System.out.println("All fine");
+					
 					transferFile(hadoopProperties.getStockCSVFileName(), "/home/training");
 					
 					

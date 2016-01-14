@@ -5,22 +5,22 @@
    <boolean>true</boolean>
   </void>
   <void property="jobServerInputFolderPath">
-   <string>/home/training/input</string>
+   <string>/home/training</string>
   </void>
   <void property="jobServerOutputFolderPath">
    <string>/home/training/output</string>
   </void>
   <void property="numOfClusters">
-   <int>4</int>
+   <int>7</int>
   </void>
   <void property="numOfDays">
-   <int>2</int>
+   <int>30</int>
   </void>
   <void property="numOfFeatures">
    <int>2</int>
   </void>
   <void property="numOfStocks">
-   <int>2</int>
+   <int>100</int>
   </void>
   <void property="open">
    <boolean>true</boolean>
