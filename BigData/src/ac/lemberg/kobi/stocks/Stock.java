@@ -55,6 +55,7 @@ public class Stock implements Vector{
 		return arrToRet;
 	}
 	/**
+	 * jhj
 	 * @return the name
 	 */
 	public String getName() {
