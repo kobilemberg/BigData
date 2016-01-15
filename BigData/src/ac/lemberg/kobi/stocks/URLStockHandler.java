@@ -50,10 +50,10 @@ public class URLStockHandler {
 				
 				String[] splitedfileInputLine = fileInputLine.split("\\|");
 				System.out.println("Stock Symbol:"+splitedfileInputLine[0].toString()+ ", Amount:"+stocksAmount);
-				if (!stocksNameArr.contains(splitedfileInputLine[0])&&!splitedfileInputLine[0].equals("Symbol"))
+				if (!stocksNameArr.contains(splitedfileInputLine[0].trim())&&!splitedfileInputLine[0].equals("Symbol"))
 				{
 					//Adding his symbol name
-					stocksNameArr.add(splitedfileInputLine[0]);
+					stocksNameArr.add(splitedfileInputLine[0].trim());
 					counter++;
 				}
 				
