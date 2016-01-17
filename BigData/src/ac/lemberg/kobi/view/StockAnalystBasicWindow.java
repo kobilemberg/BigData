@@ -1,5 +1,6 @@
 package ac.lemberg.kobi.view;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -18,8 +19,17 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
+import com.google.common.base.Functions;
+import com.google.common.collect.Lists;
+import com.googlecode.charts4j.AxisLabelsFactory;
+import com.googlecode.charts4j.Data;
+import com.googlecode.charts4j.GCharts;
+import com.googlecode.charts4j.LineChart;
+import com.googlecode.charts4j.Plot;
+import com.googlecode.charts4j.Plots;
 import ac.lemberg.kobi.presenter.Command;
 import ac.lemberg.kobi.properties.Properties;
+import ac.lemberg.kobi.stocks.Stock;
 
 public class StockAnalystBasicWindow extends BasicWindow implements View{
 	
@@ -32,6 +42,7 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 	Button startStopButton;
 	Text hostText;
 	Combo maximumClients;
+	
 
 	
 	/**
@@ -91,15 +102,6 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 		Composite propertiesForm = new Composite(folder, SWT.NONE);
 		propertiesForm.setLayout(rowLayout);
 		propertiesTab.setControl(propertiesForm);
-		
-		
-		
-		
-		///////
-		///
-		//////
-		//createLabel(propertiesForm,SWT.NONE,"Number of Stocks: ",110,15);
-		//Text stockTest = createText(propertiesForm, SWT.SINGLE | SWT.BORDER, properties.getHost(), 147, 15);
 		hostText = createText(propertiesForm, SWT.SINGLE | SWT.BORDER, properties.getHost(), 147, 15);
 		createLabel(propertiesForm, SWT.NONE, "", 110, 10);
 		Button submitButton = createButton(propertiesForm, " Update    ", "Resources/save.png",160,30);
@@ -116,36 +118,15 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 						if (!textStocks.getText().trim().isEmpty() && !textAnalyze.getText().trim().isEmpty() && !textCluster.getText().trim().isEmpty())
 						{
 							int numberOfStocks = new Integer(new String(textStocks.getText()).trim()).intValue();
-
-							
 							int analyze = new Integer(new String(textAnalyze.getText()).trim()).intValue();
-							
 							int cluster = new Integer(new String(textCluster.getText()).trim()).intValue();
-							
-					
 							boolean open = buttonOpen.getSelection();
 							boolean high = buttonHigh.getSelection();
 							boolean close = buttonClose.getSelection();
 							boolean low = buttonLow.getSelection();
-					
 							startStopButton.setText("Stop job");
 							startStopButton.setEnabled(true);
-							Thread t = new Thread(new Runnable() {
-								@Override
-								public void run() 
-								{
-									remoteSolve(numberOfStocks,analyze,cluster,open,high,low,close);
-									Display.getDefault().asyncExec(new Runnable() 
-									{
-										public void run() 
-										{
-											serverStatus.setText("Status: On.");
-											startStopButton.setEnabled(true);
-										}
-									});
-								}
-							});
-							t.start();
+							remoteSolve(numberOfStocks,analyze,cluster,open,high,low,close);
 						}
 						else
 						{
@@ -232,8 +213,13 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 	 * {@inheritDoc}
 	 */
 	public void displayData(Object data) {
-		System.out.println(data.toString());
-		
+		/*System.out.println(data.toString());
+		if(data.equals("Done"))
+		{
+			setUserCommand(100);
+			notifyObservers(new String[]{"1"});
+		}
+		*/
 	}
 	
 	@Override
@@ -388,7 +374,6 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 	
 	public void disconnect()
 	{
-		//String[] a = {"a","b","c"};
 		viewCommandMap.get("Exit").doCommand(new String[] {"null"});
 	}
 	
@@ -401,8 +386,6 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 	 * 		Run the job
 	 * 		Copy from linux to windows the results. 
 	 */
-	
-	
 	public void remoteSolve(int numberOfStocks, int analyze, int clusters,boolean open, boolean high, boolean low, boolean close)
 	{
 		
@@ -417,7 +400,7 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 			 * Date
 			 */
 			viewCommandMap.get("Analyze").doCommand(new String[]{numberOfStocks+"",analyze+"",clusters+"",open+"",high+"",low+"",close+""});
-			System.out.println("Analyzed the Data!");
+			
 			//Connecting to Hadoop host
 			/*viewCommandMap.get("Connect").doCommand(new String[]{(properties.getHost()),(properties.getUserName()),(properties.getPassword())});
 			System.out.println("Connected!");
@@ -470,5 +453,27 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 			System.out.println("Something went wrong!");
 		}
 	}
+
+
+
+	@Override
+	public void setStockMap(HashMap<String, Stock> stocksMap) {
+		System.out.println("Analyzed the Data, creating the graph");
+		//Creating the graph
+		ArrayList<Integer> axis = new ArrayList<Integer>();
+		for (int i = 0; i <= 100; i++) {
+			axis.add(i);
+		}
+		
+		
+		Plot plot = Plots.newPlot(Data.newData(stocksMap.get(stocksMap.keySet().toArray()[0]).getVector()));
+        LineChart chart = GCharts.newLineChart(plot);
+       // chart.addHorizontalRangeMarker(33.3, 66.6, LIGHTBLUE);
+        chart.addXAxisLabels(AxisLabelsFactory.newAxisLabels(Lists.transform(axis, Functions.toStringFunction()),axis ));
+        chart.addYAxisLabels(AxisLabelsFactory.newAxisLabels(Lists.transform(axis, Functions.toStringFunction()),axis ));
+        
+	}
+	
+	
 
 }

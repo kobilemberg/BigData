@@ -219,6 +219,10 @@ public class Presenter implements Observer {
 		{
 			
 			int modelCompletedNum = model.getModelCompletedCommand();
+			if(modelCompletedNum==5)
+			{
+				this.view.setStockMap(this.model.getStocksMap());
+			}
 			if(modelCompletedNum!=-1)
 				view.displayData(model.getData());
 			else

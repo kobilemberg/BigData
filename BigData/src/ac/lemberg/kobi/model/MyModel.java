@@ -37,6 +37,7 @@ public class MyModel extends Observable implements Model{
 	private boolean flag = false;
 	private Properties userProperties;
 	private HadoopProperties hadoopProperties;
+	HashMap<String, Stock> finalstocksMap;
 	
 	
 	
@@ -169,113 +170,126 @@ public class MyModel extends Observable implements Model{
 
 	@Override
 	public void analyzeData(String numberOfStocks, String analyze, String clusters, String open, String high,String low, String close) {
-		
-		/*Prepering features array for stock filter*/
-		ArrayList<String> features= new ArrayList<String>();
-		if(open.equals("true"))
-			features.add("OPEN");
-		if(high.equals("true"))
-			features.add("HIGH");
-		if(low.equals("true"))
-			features.add("LOW");
-		if(close.equals("true"))
-			features.add("CLOSE");
-		
+		Thread t = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				/*Prepering features array for stock filter*/
+				ArrayList<String> features= new ArrayList<String>();
+				if(open.equals("true"))
+					features.add("OPEN");
+				if(high.equals("true"))
+					features.add("HIGH");
+				if(low.equals("true"))
+					features.add("LOW");
+				if(close.equals("true"))
+					features.add("CLOSE");
+				
 
-		
-		/*Setting user changes in hadoopProperties file*/
-		hadoopProperties.setNumOfStocks(new Integer(numberOfStocks));
-		hadoopProperties.setNumOfDays(new Integer(analyze));
-		hadoopProperties.setNumOfClusters(new Integer(clusters));
-		hadoopProperties.setOpen(new Boolean(open));
-		hadoopProperties.setClose(new Boolean(close));
-		hadoopProperties.setHigh(new Boolean(high));
-		hadoopProperties.setLow(new Boolean(low));
-		hadoopProperties.setNumOfFeatures(features.size());
-		hadoopProperties.setJobServerInputFolderPath("/home/training");
-		/*Writing Hadoop properties*/
-		try {
-			XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream("Settings/HadoopProperties.xml")));
-			encoder.writeObject(hadoopProperties);
-			encoder.close();
-		} catch (Exception e) {
-			System.out.println("problem with writing XML");
-		}
-		
-		
-		
-		
-		//check if it work!
+				
+				/*Setting user changes in hadoopProperties file*/
+				hadoopProperties.setNumOfStocks(new Integer(numberOfStocks));
+				hadoopProperties.setNumOfDays(new Integer(analyze));
+				hadoopProperties.setNumOfClusters(new Integer(clusters));
+				hadoopProperties.setOpen(new Boolean(open));
+				hadoopProperties.setClose(new Boolean(close));
+				hadoopProperties.setHigh(new Boolean(high));
+				hadoopProperties.setLow(new Boolean(low));
+				hadoopProperties.setNumOfFeatures(features.size());
+				hadoopProperties.setJobServerInputFolderPath("/home/training");
+				/*Writing Hadoop properties*/
 				try {
-					
-					URLStockHandler urlStockHandler = new URLStockHandler(new Integer(numberOfStocks), new Integer(analyze),(String[])features.toArray(new String[features.size()]));
-					HashMap<String, Stock> stocksMap = urlStockHandler.connectAndReadStocks(userProperties.getCsvFilePathForStockSymbols().
-							substring(0, (userProperties.getCsvFilePathForStockSymbols().length())-"/vector.csv".length())+"/nasdaqlisted.txt");
-					
-					for(Stock s: (stocksMap.values()) )
-					{
-						s.setVctor(s.getAlldaysFeatures());
-
-					}
-					MinMaxNormalizer minMax= new MinMaxNormalizer();
-					minMax.normalizeData(stocksMap.values(), 100.0, 0.0);
-					for(Stock s: (stocksMap.values()) )
-					{
-						System.out.println(s.toFullString());
-					}
-					
-
-					CSVWriter csvWriter = new CSVWriter(new FileWriter(userProperties.getCsvFilePathForStockSymbols()), ',' );
-					for(Stock s: (stocksMap.values()) )
-					{
-						System.out.println(s.getVectorString());
-						csvWriter.writeNext(s.getVectorString().split(","));
-					}
-					csvWriter.close();
-					
-					/*Connecting to cloudera hadoop and transfering files*/
-					System.out.println("Connected!");
-					sshConnect(this.userProperties.getHost(), this.userProperties.getUserName(), this.userProperties.getPassword());
-					executeCommand("mv /home/training/hadoopProperties.xml ; mv /home/training/vectors.csv"); 
-					transferFile("Settings/HadoopProperties.xml", "/home/training");
-					System.out.println("All fine");
-					
-					transferFile(hadoopProperties.getStockCSVFileName(), "/home/training");
-					
-					
-					
-					//Connecting to Hadoop host
-					//viewCommandMap.get("Connect").doCommand(new String[]{(properties.getHost()),(properties.getUserName()),(properties.getPassword())});
-					System.out.println("Connected!");
-					/*
-					//Delete on the linux the input and output path to avoid errors.
-					viewCommandMap.get("Execute").doCommand(new String[]{"rm -Rf "+properties.getJobServerInputFolderPath()});
-					viewCommandMap.get("Execute").doCommand(new String[]{"rm -Rf "+properties.getJobServerOutputFolderPath()});
-					
-					//Delete the output folder from Hadoop fs to avoid errors.
-					viewCommandMap.get("Execute").doCommand(new String[]{"hadoop fs -rmr output"});
-					System.out.println("Removed all folders");
-					
-					//Creating a new input directory to copy the files from windows
-					viewCommandMap.get("Execute").doCommand(new String[]{"mkdir "+properties.getJobServerInputFolderPath()});
-					viewCommandMap.get("Execute").doCommand(new String[]{"cd "+properties.getJobServerInputFolderPath()});
-					
-					//For each file in windows transfer it to linux
-					File inputFolder = new File("input");
-					File[] listOfFiles = inputFolder.listFiles();
-					for(File log:listOfFiles)
-					{
-						viewCommandMap.get("Transfer").doCommand(new String[]{"input/"+log.getName(),properties.getJobServerInputFolderPath()});
-					}*/
-					
-					
-					
-		
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream("Settings/HadoopProperties.xml")));
+					encoder.writeObject(hadoopProperties);
+					encoder.close();
+				} catch (Exception e) {
+					System.out.println("problem with writing XML");
 				}
-				System.out.println("Finished!");
+				
+				
+				
+				
+				//check if it work!
+						try {
+							
+							URLStockHandler urlStockHandler = new URLStockHandler(new Integer(numberOfStocks), new Integer(analyze),(String[])features.toArray(new String[features.size()]));
+							HashMap<String, Stock> stocksMap = urlStockHandler.connectAndReadStocks(userProperties.getCsvFilePathForStockSymbols().
+									substring(0, (userProperties.getCsvFilePathForStockSymbols().length())-"/vector.csv".length())+"/nasdaqlisted.txt");
+							
+							for(Stock s: (stocksMap.values()) )
+							{
+								s.setVctor(s.getAlldaysFeatures());
+
+							}
+							MinMaxNormalizer minMax= new MinMaxNormalizer();
+							minMax.normalizeData(stocksMap.values(), 100.0, 0.0);
+							for(Stock s: (stocksMap.values()) )
+							{
+								System.out.println(s.toFullString());
+							}
+							
+
+							CSVWriter csvWriter = new CSVWriter(new FileWriter(userProperties.getCsvFilePathForStockSymbols()), ',' );
+							for(Stock s: (stocksMap.values()) )
+							{
+								System.out.println(s.getVectorString());
+								csvWriter.writeNext(s.getVectorString().split(","));
+							}
+							csvWriter.close();
+							
+							
+							
+							/*	This code war remark as comment in order to save time for graph development.				
+							//Connecting to cloudera hadoop and transfering files
+							sshConnect(this.userProperties.getHost(), this.userProperties.getUserName(), this.userProperties.getPassword());
+							System.out.println("Connected to Hadoop cloudera");
+							executeCommand("rm /home/training/hadoopProperties.xml ; rm /home/training/vectors.csv"); 
+							System.out.println("Deleted hadoopProperties.xml and vectors.csv from hadoop cloudera");
+							transferFile("Settings/HadoopProperties.xml", "/home/training");
+							transferFile(hadoopProperties.getStockCSVFileName(), "/home/training");
+							System.out.println("Created hadoopProperties.xml and vectors.csv in hadoop cloudera - /home/training");
+							*/
+							
+							
+
+							/*
+							//Delete on the linux the input and output path to avoid errors.
+							viewCommandMap.get("Execute").doCommand(new String[]{"rm -Rf "+properties.getJobServerInputFolderPath()});
+							viewCommandMap.get("Execute").doCommand(new String[]{"rm -Rf "+properties.getJobServerOutputFolderPath()});
+							
+							//Delete the output folder from Hadoop fs to avoid errors.
+							viewCommandMap.get("Execute").doCommand(new String[]{"hadoop fs -rmr output"});
+							System.out.println("Removed all folders");
+							
+							//Creating a new input directory to copy the files from windows
+							viewCommandMap.get("Execute").doCommand(new String[]{"mkdir "+properties.getJobServerInputFolderPath()});
+							viewCommandMap.get("Execute").doCommand(new String[]{"cd "+properties.getJobServerInputFolderPath()});
+							
+							//For each file in windows transfer it to linux
+							File inputFolder = new File("input");
+							File[] listOfFiles = inputFolder.listFiles();
+							for(File log:listOfFiles)
+							{
+								viewCommandMap.get("Transfer").doCommand(new String[]{"input/"+log.getName(),properties.getJobServerInputFolderPath()});
+							}*/
+							
+							//Return the analyzed stocks to view in order to create the user graphs.
+							finalstocksMap = stocksMap;
+							setModelCommand(5);
+				
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						System.out.println("Finished!");
+				
+			}
+		});
+		t.start();
+		
+		
+		
+
 	}
 
 	public HadoopProperties getHadoopProperties() {
@@ -284,6 +298,11 @@ public class MyModel extends Observable implements Model{
 
 	public void setHadoopProperties(HadoopProperties hadoopProperties) {
 		this.hadoopProperties = hadoopProperties;
+	}
+
+	@Override
+	public HashMap<String, Stock> getStocksMap() {
+		return this.finalstocksMap;
 	}
 	
 

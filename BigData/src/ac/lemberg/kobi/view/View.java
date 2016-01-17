@@ -8,6 +8,7 @@ package ac.lemberg.kobi.view;
  */
 import java.util.HashMap;
 import ac.lemberg.kobi.presenter.Command;
+import ac.lemberg.kobi.stocks.Stock;
 
 public interface View {
 	/**
@@ -52,5 +53,7 @@ public interface View {
 	 * @return HashMap of commands to execute
 	 */
 	public HashMap<String, Command> getViewCommandMap();
+
+	public void setStockMap(HashMap<String, Stock> stocksMap);
 	
 }

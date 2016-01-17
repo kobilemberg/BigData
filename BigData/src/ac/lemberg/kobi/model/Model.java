@@ -7,8 +7,11 @@ package ac.lemberg.kobi.model;
  */
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import com.jcraft.jsch.JSchException;
+
+import ac.lemberg.kobi.stocks.Stock;
 
 
 public interface Model {
@@ -53,6 +56,7 @@ public interface Model {
 	public int getModelCompletedCommand();
 	public void analyzeData(String numberOfStocks, String analyze, String clusters, String open, String high,
 			String low, String close) ;
+	public HashMap<String, Stock> getStocksMap();
 	
 
 }

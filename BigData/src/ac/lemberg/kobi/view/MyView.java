@@ -16,6 +16,7 @@ import java.util.Observable;
 
 import ac.lemberg.kobi.presenter.Command;
 import ac.lemberg.kobi.properties.Properties;
+import ac.lemberg.kobi.stocks.Stock;
 
 public class MyView extends Observable implements View {
 	CLI cli;
@@ -155,6 +156,12 @@ public class MyView extends Observable implements View {
 	 * @param out the out to set
 	 */
 	public void setOut(PrintWriter out) {this.out = out;}
+
+	@Override
+	public void setStockMap(HashMap<String, Stock> stocksMap) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	
 	
