@@ -218,9 +218,12 @@ public class SSHAdapter {
 	 */
 	public Boolean disconnect()
 	{
-		sftpChannel.disconnect();
-		channelExec.disconnect();
-		session.disconnect();
+		if(sftpChannel!=null)
+			sftpChannel.disconnect();
+		if(channelExec!=null)
+			channelExec.disconnect();
+		if(session!=null)
+			session.disconnect();
 		return true;
 	}
 	

@@ -1,5 +1,6 @@
 package ac.lemberg.kobi.view;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.eclipse.swt.SWT;
@@ -94,7 +95,7 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 		buttonClose.setText("Close");
 		Label labelCluster = createLabel(serverForm, SWT.NONE, "Clusters: ", 110, 15);
 		Text textCluster = createText(serverForm, SWT.SINGLE | SWT.BORDER, " ");
-		createLabel(serverForm, SWT.NONE, "Host:", 110, 15);
+		//createLabel(serverForm, SWT.NONE, "Host:", 110, 15);
 		serverStatus = createLabel(serverForm, SWT.NULL , "Job Status: Off");
 		startStopButton = createButton(serverForm, "Start job", "Resources/power.png",160,30);
 		TabItem propertiesTab = new TabItem(folder, SWT.NULL);
@@ -124,8 +125,8 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 							boolean high = buttonHigh.getSelection();
 							boolean close = buttonClose.getSelection();
 							boolean low = buttonLow.getSelection();
-							startStopButton.setText("Stop job");
-							startStopButton.setEnabled(true);
+							startStopButton.setText("Working");
+							startStopButton.setEnabled(false);
 							remoteSolve(numberOfStocks,analyze,cluster,open,high,low,close);
 						}
 						else
@@ -136,7 +137,7 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 					        messageBox.open();
 						}
 					}
-					else if (startStopButton.getText().toString().equals("Stop job"))
+					/*else if (startStopButton.getText().toString().equals("Working"))
 					{
 						startStopButton.setText("Start job");
 						Thread t = new Thread(new Runnable() {	
@@ -153,7 +154,7 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 							}
 						});
 						t.start();
-					}
+					}*/
 				}
 					
 			
@@ -375,6 +376,9 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 	public void disconnect()
 	{
 		viewCommandMap.get("Exit").doCommand(new String[] {"null"});
+		System.exit(0);
+
+		exit();
 	}
 	
 	/**
@@ -458,7 +462,22 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 
 	@Override
 	public void setStockMap(HashMap<String, Stock> stocksMap) {
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				serverStatus.setText("Status: Off.");
+				startStopButton.setEnabled(true);
+				startStopButton.setText("Start job");
+			}
+		});
+		
+		try {
+			Runtime.getRuntime().exec(new String[]{"cmd", "/c","start chrome http://msn.co.il"});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		System.out.println("Analyzed the Data, creating the graph");
+
 		//Creating the graph
 		ArrayList<Integer> axis = new ArrayList<Integer>();
 		for (int i = 0; i <= 100; i++) {

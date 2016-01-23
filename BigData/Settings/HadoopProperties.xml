@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <java version="1.8.0_51" class="java.beans.XMLDecoder">
  <object class="ac.lemberg.kobi.properties.HadoopProperties">
-  <void property="close">
-   <boolean>true</boolean>
-  </void>
   <void property="high">
    <boolean>true</boolean>
   </void>
@@ -13,17 +10,14 @@
   <void property="jobServerOutputFolderPath">
    <string>/home/training/output</string>
   </void>
-  <void property="low">
-   <boolean>true</boolean>
-  </void>
   <void property="numOfClusters">
-   <int>2</int>
+   <int>4</int>
   </void>
   <void property="numOfDays">
-   <int>10</int>
+   <int>5</int>
   </void>
   <void property="numOfFeatures">
-   <int>4</int>
+   <int>2</int>
   </void>
   <void property="numOfStocks">
    <int>10</int>

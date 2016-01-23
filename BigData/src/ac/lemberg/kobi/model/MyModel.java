@@ -38,7 +38,7 @@ public class MyModel extends Observable implements Model{
 	private Properties userProperties;
 	private HadoopProperties hadoopProperties;
 	HashMap<String, Stock> finalstocksMap;
-	
+	Thread t;
 	
 	
 	
@@ -136,6 +136,7 @@ public class MyModel extends Observable implements Model{
 		setModelCommand(4);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	/**
 	 * {@inheritDoc}
@@ -143,6 +144,8 @@ public class MyModel extends Observable implements Model{
 	public void exit() {
 		if(flag == true)
 			sshConnection.disconnect();
+		if(t!=null)
+			t.stop();
 		
 	}
 	//Getters and setters
@@ -170,7 +173,7 @@ public class MyModel extends Observable implements Model{
 
 	@Override
 	public void analyzeData(String numberOfStocks, String analyze, String clusters, String open, String high,String low, String close) {
-		Thread t = new Thread(new Runnable() {
+		t = new Thread(new Runnable() {
 			
 			@Override
 			public void run() {
@@ -239,17 +242,30 @@ public class MyModel extends Observable implements Model{
 							
 							
 							
-							/*	This code war remark as comment in order to save time for graph development.				
+							//This code war remark as comment in order to save time for graph development.				
 							//Connecting to cloudera hadoop and transfering files
-							sshConnect(this.userProperties.getHost(), this.userProperties.getUserName(), this.userProperties.getPassword());
+							sshConnect(userProperties.getHost(),userProperties.getUserName(), userProperties.getPassword());
 							System.out.println("Connected to Hadoop cloudera");
-							executeCommand("rm /home/training/hadoopProperties.xml ; rm /home/training/vectors.csv"); 
-							System.out.println("Deleted hadoopProperties.xml and vectors.csv from hadoop cloudera");
+							executeCommand("rm /home/training/HadoopProperties.xml ; rm /home/training/vectors.csv");
+							executeCommand("rm -Rf "+hadoopProperties.getJobServerOutputFolderPath()+" ;mkdir "+hadoopProperties.getJobServerOutputFolderPath()); 
+							System.out.println("Deleted HadoopProperties.xml and vectors.csv from hadoop cloudera");
 							transferFile("Settings/HadoopProperties.xml", "/home/training");
+							System.out.println("Created hadoopProperties.xml - /home/training");
 							transferFile(hadoopProperties.getStockCSVFileName(), "/home/training");
-							System.out.println("Created hadoopProperties.xml and vectors.csv in hadoop cloudera - /home/training");
-							*/
+							System.out.println("Created vectors.csv in hadoop cloudera - /home/training");
+							transferFile("input/stocks/clustering.jar", "/home/training");
+							executeCommand("hadoop fs -rmr /home");
 							
+							System.out.println("Creating Folders in HDFS");
+							executeCommand("hadoop fs -mkdir home; hadoop fs -mkdir /home/training/");
+							System.out.println("Uploading files to HDFS");
+							
+							executeCommand("hadoop fs -put "+hadoopProperties.getJobServerInputFolderPath()+"/vectors.csv "+  hadoopProperties.getJobServerInputFolderPath());
+							executeCommand("hadoop jar /home/training/clustering.jar  ac.konky.nir.algorithms.Driver");
+							executeCommand("hadoop fs -get "+hadoopProperties.getJobServerOutputFolderPath()+"/part-r-00000 "+ hadoopProperties.getJobServerOutputFolderPath());
+							getFIleByName(hadoopProperties.getJobServerOutputFolderPath()+"/part-r-00000");
+							//"hadoop fs -get output "+properties.getJobServerOutputFolderPath()}
+							//viewCommandMap.get("Execute").doCommand(new String[]{"hadoop fs -put "+properties.getJobServerInputFolderPath()+" logFilterInput"});
 							
 
 							/*
