@@ -471,7 +471,7 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 		});
 		
 		try {
-			Runtime.getRuntime().exec(new String[]{"cmd", "/c","start chrome http://msn.co.il"});
+			Runtime.getRuntime().exec(new String[]{"cmd", "/c","start firefox.exe WebDisplay/graphs.html"});
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

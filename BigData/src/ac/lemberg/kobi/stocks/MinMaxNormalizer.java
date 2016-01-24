@@ -27,11 +27,7 @@ public class MinMaxNormalizer {
 			System.out.println("Min:"+min+" , Max:"+max);
 			for (int i = 0; i < vector.length; i++) {
 				System.out.println("vector[i] before:"+vector[i]);
-				if(min!=max)
 					vector[i] = (((vector[i]-min)/(max-min))*(new_max-new_min))+new_min;
-				else
-					vector[i] = 0.5;
-				System.out.println("vector[i] after:"+vector[i]);
 			}
 			min = Integer.MAX_VALUE;
 			max = Integer.MIN_VALUE;

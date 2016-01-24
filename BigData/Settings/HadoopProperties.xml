@@ -1,26 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <java version="1.8.0_51" class="java.beans.XMLDecoder">
  <object class="ac.lemberg.kobi.properties.HadoopProperties">
+  <void property="close">
+   <boolean>true</boolean>
+  </void>
   <void property="high">
    <boolean>true</boolean>
   </void>
   <void property="jobServerInputFolderPath">
-   <string>/home/training</string>
+   <string>/home/training/clustering</string>
   </void>
   <void property="jobServerOutputFolderPath">
-   <string>/home/training/output</string>
+   <string>/home/training/clustering/output</string>
+  </void>
+  <void property="low">
+   <boolean>true</boolean>
   </void>
   <void property="numOfClusters">
-   <int>4</int>
+   <int>7</int>
   </void>
   <void property="numOfDays">
-   <int>5</int>
+   <int>30</int>
   </void>
   <void property="numOfFeatures">
-   <int>2</int>
+   <int>4</int>
   </void>
   <void property="numOfStocks">
-   <int>10</int>
+   <int>100</int>
   </void>
   <void property="open">
    <boolean>true</boolean>

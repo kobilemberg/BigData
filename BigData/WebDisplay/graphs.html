@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="jquery.sparkline.min.js"></script>
+    <script src="csvToArray.v2.1.min.js"></script>
+    <script>
+	var array;
+    var csvAsArray=[];
+    var newArray=[];
+    var splitArray;
+    var stocks = [];
+		$(document).ready(function ()
+        {
+				$.ajax({
+							url: "part-r-00000",
+							dataType: 'text',
+							cache: false ,
+							success : function (data) 
+							{
+								array = data.split('\n');
+							}
+				});
+
+
+		$.ajax({
+			url: "vectors.csv",
+			dataType: 'text',
+			cache: false ,
+			success : function (csvAsString) {
+            csvAsArray=csvAsString.split('\n');
+            //var csvAsArrayTemp = csvAsString.csvToArray();
+            //csvAsArray.push(csvAsArrayTemp);
+            graph();
+
+				}
+			});
+			
+			
+			
+			
+			
+				    function graph() {
+        for (var y = 0; y < array.length; y++) {
+            splitArray = array[y].split(',');
+            if (splitArray != "") {
+                var h = document.createElement("H1");
+                var t = document.createTextNode("Cluster" + (y + 1));
+                h.appendChild(t);
+                document.body.appendChild(h);
+
+
+                for (var i = 1; i < splitArray.length; i++) {
+                    var name = document.createElement("span");
+                    var t = document.createTextNode(splitArray[i]);
+                    name.appendChild(t);
+                    document.body.appendChild(name);
+
+                    var newSpan = document.createElement("span");
+                    var currentSpan = document.getElementById("span1");
+                    document.body.insertBefore(newSpan, currentSpan);
+                    for (var j = 0; j < csvAsArray.length; j++) {
+                        var csvTemp = csvAsArray[j].split(',');
+                        if (csvTemp[0].trim() == splitArray[i].trim()) {
+                            for (var z = 1; z < csvTemp.length; z++) {
+                                stocks[z - 1] = csvTemp[z];
+                                console.log(csvTemp[z]);
+                            }
+                        }
+                    }
+                    $(newSpan).sparkline(stocks, {
+                        type: 'line',
+                        width: '100',
+                        height: '50'
+                    });
+                }
+            }
+        }
+		};	
+			
+			
+			
+			
+
+     });
+	
+
+		
+		
+		
+    </script>
+	
+	
+	
+	
+	
+	
+
+</head>
+<body>
+
+<div id="wrapper">
+    <h1 id="cluster"></h1>
+    <span id="graph"> </span>
+
+</div>
+
+</body>
+
+<script>
+
+    
+
+
+
+
+
+
+
+
+
+
+</script>
+</html>
+
+
+
+
+
+
+

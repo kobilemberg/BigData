@@ -5,10 +5,10 @@
    <string>GUI</string>
   </void>
   <void property="csvFilePathForStockSymbols">
-   <string>input/stocks/vectors.csv</string>
+   <string>input/stocks</string>
   </void>
   <void property="host">
-   <string>192.168.254.131</string>
+   <string>192.168.0.110</string>
   </void>
   <void property="password">
    <string>training</string>
