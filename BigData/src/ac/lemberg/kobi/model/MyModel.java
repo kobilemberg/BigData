@@ -358,10 +358,6 @@ public class MyModel extends Observable implements Model{
 			}
 		});
 		t.start();
-		
-		
-		
-
 	}
 
 	public HadoopProperties getHadoopProperties() {
