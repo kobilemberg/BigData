@@ -20,13 +20,13 @@
    <int>7</int>
   </void>
   <void property="numOfDays">
-   <int>3</int>
+   <int>30</int>
   </void>
   <void property="numOfFeatures">
    <int>4</int>
   </void>
   <void property="numOfStocks">
-   <int>50</int>
+   <int>100</int>
   </void>
   <void property="open">
    <boolean>true</boolean>

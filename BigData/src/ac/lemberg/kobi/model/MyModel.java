@@ -263,8 +263,7 @@ public class MyModel extends Observable implements Model{
 									csvWriter.writeNext(s.getVectorString().split(","));
 								}
 							}
-							
-
+							csvWriter.close();
 							
 							csvWriter = new CSVWriter(new FileWriter("WebDisplay/vectors.csv"), ',' );
 							for(Stock s: (stocksMap.values()) )
@@ -287,7 +286,6 @@ public class MyModel extends Observable implements Model{
 							executeCommand("rm -Rf "+outputFolder+" ;mkdir "+outputFolder); 
 							System.out.println("Deleted folder: " +rootFolder);
 							System.out.println("Created: "+ vectorsFolder+" ,"+outputFolder);
-
 							transferFile("Settings/HadoopProperties.xml", rootFolder);
 							System.out.println("Created hadoopProperties.xml - "+rootFolder);
 							for(int file=0;file<=numOfFiles;file++)
@@ -313,7 +311,8 @@ public class MyModel extends Observable implements Model{
 							executeCommand("hadoop fs -put "+rootFolder+ "/HadoopProperties.xml "+ hadoopProperties.getJobServerInputFolderPath());
 							executeCommand("hadoop fs -put "+vectorsFolder+" "+ hadoopProperties.getJobServerInputFolderPath());
 							System.out.println("execute the project.");
-							executeCommand("hadoop jar /home/training/clustering.jar  ac.konky.nir.algorithms.Driver");
+							executeCommand("hadoop jar /home/training/clustering.jar solution.Driver /home/training/clustering");
+							
 							System.out.println("getting the files from hadoop to cloudera locally.");
 							executeCommand("hadoop fs -get "+hadoopProperties.getJobServerOutputFolderPath()+"/part-r-00000 "+ hadoopProperties.getJobServerOutputFolderPath());
 							System.out.println("transfer the file to windows.");
