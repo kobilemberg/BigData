@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<java version="1.8.0_51" class="java.beans.XMLDecoder">
- <object class="ac.lemberg.kobi.properties.HadoopProperties">
+<java version="1.8.0_71" class="java.beans.XMLDecoder">
+ <object class="solution.HadoopProperties">
   <void property="close">
    <boolean>true</boolean>
   </void>
@@ -20,13 +20,13 @@
    <int>7</int>
   </void>
   <void property="numOfDays">
-   <int>30</int>
+   <int>3</int>
   </void>
   <void property="numOfFeatures">
    <int>4</int>
   </void>
   <void property="numOfStocks">
-   <int>100</int>
+   <int>50</int>
   </void>
   <void property="open">
    <boolean>true</boolean>

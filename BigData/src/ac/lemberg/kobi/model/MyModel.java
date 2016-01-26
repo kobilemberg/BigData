@@ -23,12 +23,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Observable;
 import com.opencsv.CSVWriter;
-import ac.lemberg.kobi.properties.HadoopProperties;
-import ac.lemberg.kobi.properties.Properties;
+
 import ac.lemberg.kobi.ssh.SSHAdapter;
 import ac.lemberg.kobi.stocks.MinMaxNormalizer;
 import ac.lemberg.kobi.stocks.Stock;
 import ac.lemberg.kobi.stocks.URLStockHandler;
+import solution.HadoopProperties;
+import solution.Properties;
 
 
 public class MyModel extends Observable implements Model{
@@ -302,27 +303,24 @@ public class MyModel extends Observable implements Model{
 							}
 							
 							System.out.println("finish with all files transfering");
-							
-
-							
-							
-							
-							
-							/*
 							transferFile("input/stocks/clustering.jar", "/home/training");
 							executeCommand("hadoop fs -rmr /home");
-							
+							//executeCommand("hadoop fs -rmr /home/training");
 							System.out.println("Creating Folders in HDFS");
-							executeCommand("hadoop fs -mkdir home; hadoop fs -mkdir /home/training/");
+							executeCommand("hadoop fs -mkdir home; hadoop fs -mkdir /home/training; hadoop fs -mkdir /home/training/clustering; hadoop fs -mkdir /home/training/clustering/vectors");
 							System.out.println("Uploading files to HDFS");
-							
-							executeCommand("hadoop fs -put "+hadoopProperties.getJobServerInputFolderPath()+"/vectors.csv "+  hadoopProperties.getJobServerInputFolderPath());
+							System.out.println("move the stock files from cloudera locally to hadoop.");
+							executeCommand("hadoop fs -put "+rootFolder+ "/HadoopProperties.xml "+ hadoopProperties.getJobServerInputFolderPath());
+							executeCommand("hadoop fs -put "+vectorsFolder+" "+ hadoopProperties.getJobServerInputFolderPath());
+							System.out.println("execute the project.");
 							executeCommand("hadoop jar /home/training/clustering.jar  ac.konky.nir.algorithms.Driver");
+							System.out.println("getting the files from hadoop to cloudera locally.");
 							executeCommand("hadoop fs -get "+hadoopProperties.getJobServerOutputFolderPath()+"/part-r-00000 "+ hadoopProperties.getJobServerOutputFolderPath());
+							System.out.println("transfer the file to windows.");
 							getFIleByName(hadoopProperties.getJobServerOutputFolderPath()+"/part-r-00000");
 							//"hadoop fs -get output "+properties.getJobServerOutputFolderPath()}
 							//viewCommandMap.get("Execute").doCommand(new String[]{"hadoop fs -put "+properties.getJobServerInputFolderPath()+" logFilterInput"});
-							*/
+							
 
 							/*
 							//Delete on the linux the input and output path to avoid errors.
@@ -343,8 +341,8 @@ public class MyModel extends Observable implements Model{
 							for(File log:listOfFiles)
 							{
 								viewCommandMap.get("Transfer").doCommand(new String[]{"input/"+log.getName(),properties.getJobServerInputFolderPath()});
-							}*/
-							
+							}
+							*/
 							//Return the analyzed stocks to view in order to create the user graphs.
 							finalstocksMap = stocksMap;
 							setModelCommand(5);

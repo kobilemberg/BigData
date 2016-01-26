@@ -15,8 +15,8 @@ import java.util.HashMap;
 import java.util.Observable;
 
 import ac.lemberg.kobi.presenter.Command;
-import ac.lemberg.kobi.properties.Properties;
 import ac.lemberg.kobi.stocks.Stock;
+import solution.Properties;
 
 public class MyView extends Observable implements View {
 	CLI cli;

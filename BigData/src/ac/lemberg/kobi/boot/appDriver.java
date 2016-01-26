@@ -10,10 +10,11 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import ac.lemberg.kobi.model.MyModel;
 import ac.lemberg.kobi.presenter.Presenter;
-import ac.lemberg.kobi.properties.Properties;
 import ac.lemberg.kobi.view.MyView;
 import ac.lemberg.kobi.view.StockAnalystBasicWindow;
 import ac.lemberg.kobi.view.View;
+import solution.Properties;
+
 import java.util.Observable;
 
 

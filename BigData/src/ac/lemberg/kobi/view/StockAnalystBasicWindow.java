@@ -29,8 +29,8 @@ import com.googlecode.charts4j.LineChart;
 import com.googlecode.charts4j.Plot;
 import com.googlecode.charts4j.Plots;
 import ac.lemberg.kobi.presenter.Command;
-import ac.lemberg.kobi.properties.Properties;
 import ac.lemberg.kobi.stocks.Stock;
+import solution.Properties;
 
 public class StockAnalystBasicWindow extends BasicWindow implements View{
 	

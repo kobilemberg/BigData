@@ -1,4 +1,4 @@
-package ac.lemberg.kobi.properties;
+package solution;
 
 import java.beans.XMLEncoder;
 import java.io.BufferedOutputStream;
