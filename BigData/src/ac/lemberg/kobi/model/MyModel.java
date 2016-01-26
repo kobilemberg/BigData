@@ -265,7 +265,7 @@ public class MyModel extends Observable implements Model{
 							}
 							csvWriter.close();
 							
-							csvWriter = new CSVWriter(new FileWriter("WebDisplay/vectors.csv"), ',' );
+							csvWriter = new CSVWriter(new FileWriter("Output/vectors.csv"), ',' );
 							for(Stock s: (stocksMap.values()) )
 							{
 								csvWriter.writeNext(s.getVectorString().split(","));

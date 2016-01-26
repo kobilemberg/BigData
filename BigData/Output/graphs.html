@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="jquery.sparkline.min.js"></script>
+    <script src="csvToArray.v2.1.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style/style.css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <script>
+
+    </script>
+
+
+</head>
+<body>
+  <div id="wrapper">
+    <div id="content">
+      <h1>Stock Analysis</h1>
+      <p>This is the final project in "Big Data" course. Brought to you by Nir Konky, Kobi Lemberg, Sagi Krichbets, Alon Abadi, Arik Bidny</p>
+      <span id="links"></span>
+    </div>
+  </div>
+
+
+
+</body>
+
+<script>
+  var array;
+  var csvAsArray = [];
+  var splitArray;
+  var stocks = [];
+
+  $.ajax({
+      url: "part-r-00000",
+      dataType: 'text',
+      cache: false,
+      success: function (data) {
+          array = data.split('\n');
+      }
+  });
+
+
+  $.ajax({
+      url: "vectors.csv",
+      dataType: 'text',
+      cache: false,
+      success: function (csvAsString) {
+          csvAsArray = csvAsString.split('\n');
+          //var csvAsArrayTemp = csvAsString.csvToArray();
+          //csvAsArray.push(csvAsArrayTemp);
+          graph();
+
+      }
+  });
+
+
+  function graph() {
+      for (var y = 0; y < array.length; y++) {
+          var splitTemp = array[y].trim().split('\t');
+          splitArray = splitTemp[1].split(',');
+          if (splitArray != "") {
+            var a = document.createElement("a");
+            a.setAttribute("href","#" +"Cluster" + (y + 1));
+            a.setAttribute("class","clusterLink");
+            var createAText = document.createTextNode("Cluster #" + (y + 1));
+            a.appendChild(createAText);
+            document.getElementById("links").appendChild(a);
+            var div = document.createElement("div");
+            div.setAttribute("id","Cluster" + (y + 1));
+            div.setAttribute("class","clusterDiv");
+            var h = document.createElement("H1");
+            var t = document.createTextNode("Cluster " + (y + 1));
+            h.appendChild(t);
+            document.body.appendChild(div);
+            div.appendChild(h);
+            /* console.log(splitArray);  */
+            for (var i = 0; i < splitArray.length; i++) {
+              var stockSpan = document.createElement("span");
+              stockSpan.setAttribute("class","stockSpan");
+              div.appendChild(stockSpan);
+              var name = document.createElement("span");
+              name.setAttribute("class","stockName");
+              var t = document.createTextNode(splitArray[i]);
+              name.appendChild(t);
+              stockSpan.appendChild(name);
+              var graphSpan = document.createElement("span");
+              stockSpan.appendChild(graphSpan);
+              graphSpan.setAttribute("class","stockGraph");
+              for (var j = 0; j < csvAsArray.length; j++) {
+                var csvTemp = csvAsArray[j].split(',');
+                if (csvTemp[0].trim() == ('"' + splitArray[i] + '"').trim()) {
+                  for (var z = 1; z < csvTemp.length; z++) {
+                      var num= csvTemp[z].split('"');
+                      stocks[z - 1] = num[1];
+                  }
+                }
+              }
+              $(graphSpan).sparkline(stocks, {
+                  type: 'line',
+                  width: '250',
+                  height: '150'
+              });
+          }
+        }
+      }
+    }
+    ;
+
+
+</script>
+</html>
