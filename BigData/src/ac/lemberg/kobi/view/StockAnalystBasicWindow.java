@@ -1,7 +1,6 @@
 package ac.lemberg.kobi.view;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -20,14 +19,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
-import com.google.common.base.Functions;
-import com.google.common.collect.Lists;
-import com.googlecode.charts4j.AxisLabelsFactory;
-import com.googlecode.charts4j.Data;
-import com.googlecode.charts4j.GCharts;
-import com.googlecode.charts4j.LineChart;
-import com.googlecode.charts4j.Plot;
-import com.googlecode.charts4j.Plots;
 import ac.lemberg.kobi.presenter.Command;
 import ac.lemberg.kobi.stocks.Stock;
 import solution.Properties;
@@ -95,7 +86,6 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 		buttonClose.setText("Close");
 		Label labelCluster = createLabel(serverForm, SWT.NONE, "Clusters: ", 110, 15);
 		Text textCluster = createText(serverForm, SWT.SINGLE | SWT.BORDER, " ");
-		//createLabel(serverForm, SWT.NONE, "Host:", 110, 15);
 		serverStatus = createLabel(serverForm, SWT.NULL , "Job Status: Off");
 		startStopButton = createButton(serverForm, "Start job", "Resources/power.png",160,30);
 		TabItem propertiesTab = new TabItem(folder, SWT.NULL);
@@ -394,65 +384,7 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 	{
 		
 		try {
-			/*
-			 * 	Adj Close
-			 * Volume
-			 * Close
-			 * Low
-			 * High
-			 * Open
-			 * Date
-			 */
 			viewCommandMap.get("Analyze").doCommand(new String[]{numberOfStocks+"",analyze+"",clusters+"",open+"",high+"",low+"",close+""});
-			
-			//Connecting to Hadoop host
-			/*viewCommandMap.get("Connect").doCommand(new String[]{(properties.getHost()),(properties.getUserName()),(properties.getPassword())});
-			System.out.println("Connected!");
-			
-			//Delete on the linux the input and output path to avoid errors.
-			viewCommandMap.get("Execute").doCommand(new String[]{"rm -Rf "+properties.getJobServerInputFolderPath()});
-			viewCommandMap.get("Execute").doCommand(new String[]{"rm -Rf "+properties.getJobServerOutputFolderPath()});
-			
-			//Delete the output folder from Hadoop fs to avoid errors.
-			viewCommandMap.get("Execute").doCommand(new String[]{"hadoop fs -rmr output"});
-			System.out.println("Removed all folders");
-			
-			//Creating a new input directory to copy the files from windows
-			viewCommandMap.get("Execute").doCommand(new String[]{"mkdir "+properties.getJobServerInputFolderPath()});
-			viewCommandMap.get("Execute").doCommand(new String[]{"cd "+properties.getJobServerInputFolderPath()});
-			
-			//For each file in windows transfer it to linux
-			File inputFolder = new File("input");
-			File[] listOfFiles = inputFolder.listFiles();
-			for(File log:listOfFiles)
-			{
-				viewCommandMap.get("Transfer").doCommand(new String[]{"input/"+log.getName(),properties.getJobServerInputFolderPath()});
-			}
-			System.out.println("Transferd files from input To: "+properties.getJobServerInputFolderPath());
-			
-			//Creating a new directory for the job and upload the input directory to the job folder 
-			viewCommandMap.get("Execute").doCommand(new String[]{"hadoop fs -mkdir logFilterInput"});
-			viewCommandMap.get("Execute").doCommand(new String[]{"hadoop fs -put "+properties.getJobServerInputFolderPath()+" logFilterInput"});
-			
-			//Copy the jar from windows 
-			viewCommandMap.get("Execute").doCommand(new String[]{"cd /home/training/Desktop; "});
-			viewCommandMap.get("Transfer").doCommand(new String[]{"Jars/logFilter.jar ","/home/training"});
-			System.out.println("Jars are currently being uploaded to hadoop");
-			
-			//Starting the job
-			viewCommandMap.get("Execute").doCommand(new String[]{"cd /home/training; hadoop jar logFilter.jar solution.LogFilter logFilterInput/input output"});
-			System.out.println("hadoop is running");
-			
-			//Copy results to linux
-			viewCommandMap.get("Execute").doCommand(new String[]{"hadoop fs -get output "+properties.getJobServerOutputFolderPath()});
-			System.out.println("Copy from hadoop the files to linux");
-			
-			//Copy results nack to windows
-			viewCommandMap.get("Get file").doCommand(new String[]{properties.getJobServerOutputFolderPath()+"/part-r-00000"});
-			viewCommandMap.get("Get file").doCommand(new String[]{properties.getJobServerOutputFolderPath()+"/_SUCCESS"});
-			System.out.println("FIles are at output folder.");*/
-			
-			
 		} catch (Exception e) {
 			System.out.println("Something went wrong!");
 		}
@@ -475,21 +407,6 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		System.out.println("Analyzed the Data, creating the graph");
-
-		//Creating the graph
-		ArrayList<Integer> axis = new ArrayList<Integer>();
-		for (int i = 0; i <= 100; i++) {
-			axis.add(i);
-		}
-		
-		
-		Plot plot = Plots.newPlot(Data.newData(stocksMap.get(stocksMap.keySet().toArray()[0]).getVector()));
-        LineChart chart = GCharts.newLineChart(plot);
-       // chart.addHorizontalRangeMarker(33.3, 66.6, LIGHTBLUE);
-        chart.addXAxisLabels(AxisLabelsFactory.newAxisLabels(Lists.transform(axis, Functions.toStringFunction()),axis ));
-        chart.addYAxisLabels(AxisLabelsFactory.newAxisLabels(Lists.transform(axis, Functions.toStringFunction()),axis ));
         
 	}
 	

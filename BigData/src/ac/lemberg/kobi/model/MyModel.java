@@ -275,8 +275,10 @@ public class MyModel extends Observable implements Model{
 
 							String rootFolder = hadoopProperties.getJobServerInputFolderPath();
 							String outputFolder = hadoopProperties.getJobServerOutputFolderPath();
-							String vectorsFolder = hadoopProperties.getJobServerInputFolderPath()+"/vectors";
-							//This code war remark as comment in order to save time for graph development.				
+							String vectorsFolder = rootFolder+"/vectors";
+							String jarpath = rootFolder+"/solution";
+							
+							//This code was under comment in order to save time for graph development.				
 							//Connecting to cloudera hadoop and transfering files
 							sshConnect(userProperties.getHost(),userProperties.getUserName(), userProperties.getPassword());
 							System.out.println("Connected to Hadoop cloudera");
@@ -284,8 +286,7 @@ public class MyModel extends Observable implements Model{
 							executeCommand("mkdir "+rootFolder+"; mkdir "+vectorsFolder);
 							//executeCommand("rm /home/training/HadoopProperties.xml ; rm /home/training/vectors.csv");
 							executeCommand("rm -Rf "+outputFolder+" ;mkdir "+outputFolder); 
-							System.out.println("Deleted folder: " +rootFolder);
-							System.out.println("Created: "+ vectorsFolder+" ,"+outputFolder);
+							System.out.println("Created: "+rootFolder+ vectorsFolder+" ,"+outputFolder);
 							transferFile("Settings/HadoopProperties.xml", rootFolder);
 							System.out.println("Created hadoopProperties.xml - "+rootFolder);
 							for(int file=0;file<=numOfFiles;file++)
@@ -301,47 +302,36 @@ public class MyModel extends Observable implements Model{
 							}
 							
 							System.out.println("finish with all files transfering");
-							transferFile("input/stocks/clustering.jar", "/home/training");
+							//transferFile("input/stocks/clustering.jar", "/home/training");
 							executeCommand("hadoop fs -rmr /home");
-							//executeCommand("hadoop fs -rmr /home/training");
 							System.out.println("Creating Folders in HDFS");
 							executeCommand("hadoop fs -mkdir home; hadoop fs -mkdir /home/training; hadoop fs -mkdir /home/training/clustering; hadoop fs -mkdir /home/training/clustering/vectors");
 							System.out.println("Uploading files to HDFS");
-							System.out.println("move the stock files from cloudera locally to hadoop.");
+							System.out.println("move the stock files from linux fs to hadoop fs.");
 							executeCommand("hadoop fs -put "+rootFolder+ "/HadoopProperties.xml "+ hadoopProperties.getJobServerInputFolderPath());
 							executeCommand("hadoop fs -put "+vectorsFolder+" "+ hadoopProperties.getJobServerInputFolderPath());
-							System.out.println("execute the project.");
-							executeCommand("hadoop jar /home/training/clustering.jar solution.Driver /home/training/clustering");
+							System.out.println("Building the jar");
 							
+							executeCommand("mkdir "+jarpath);
+							File f= new File("input/stocks/Hadoop");
+							if(f.isDirectory())
+							{
+								File[] javaFiles = f.listFiles();
+								for(File javaFile : javaFiles)
+								{
+									System.out.println("Transfering " + javaFile.getPath());
+									transferFile(javaFile.getPath(), jarpath);
+								}
+								
+							}
+							System.out.println("Transfered all java files, compiling them");
+							executeCommand("cd "+ rootFolder+ " ; export HCP=`hadoop classpath`; javac -classpath $HCP solution/*.java; jar cvf clustering.jar solution/*.class");
+							System.out.println("Running the job.");
+							executeCommand("hadoop jar "+rootFolder+"/clustering.jar solution.Driver /home/training/clustering");
 							System.out.println("getting the files from hadoop to cloudera locally.");
 							executeCommand("hadoop fs -get "+hadoopProperties.getJobServerOutputFolderPath()+"/part-r-00000 "+ hadoopProperties.getJobServerOutputFolderPath());
 							System.out.println("transfer the file to windows.");
 							getFIleByName(hadoopProperties.getJobServerOutputFolderPath()+"/part-r-00000");
-							//"hadoop fs -get output "+properties.getJobServerOutputFolderPath()}
-							//viewCommandMap.get("Execute").doCommand(new String[]{"hadoop fs -put "+properties.getJobServerInputFolderPath()+" logFilterInput"});
-							
-
-							/*
-							//Delete on the linux the input and output path to avoid errors.
-							viewCommandMap.get("Execute").doCommand(new String[]{"rm -Rf "+properties.getJobServerInputFolderPath()});
-							viewCommandMap.get("Execute").doCommand(new String[]{"rm -Rf "+properties.getJobServerOutputFolderPath()});
-							
-							//Delete the output folder from Hadoop fs to avoid errors.
-							viewCommandMap.get("Execute").doCommand(new String[]{"hadoop fs -rmr output"});
-							System.out.println("Removed all folders");
-							
-							//Creating a new input directory to copy the files from windows
-							viewCommandMap.get("Execute").doCommand(new String[]{"mkdir "+properties.getJobServerInputFolderPath()});
-							viewCommandMap.get("Execute").doCommand(new String[]{"cd "+properties.getJobServerInputFolderPath()});
-							
-							//For each file in windows transfer it to linux
-							File inputFolder = new File("input");
-							File[] listOfFiles = inputFolder.listFiles();
-							for(File log:listOfFiles)
-							{
-								viewCommandMap.get("Transfer").doCommand(new String[]{"input/"+log.getName(),properties.getJobServerInputFolderPath()});
-							}
-							*/
 							//Return the analyzed stocks to view in order to create the user graphs.
 							finalstocksMap = stocksMap;
 							setModelCommand(5);
