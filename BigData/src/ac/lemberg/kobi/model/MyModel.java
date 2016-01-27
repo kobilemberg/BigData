@@ -210,138 +210,131 @@ public class MyModel extends Observable implements Model{
 				} catch (Exception e) {
 					System.out.println("problem with writing XML");
 				}
-				
-				
-				
-				
-				//check if it work!
-						try {
-							
-							URLStockHandler urlStockHandler = new URLStockHandler(new Integer(numberOfStocks), new Integer(analyze),(String[])features.toArray(new String[features.size()]));
-							HashMap<String, Stock> stocksMap = urlStockHandler.connectAndReadStocks(userProperties.getCsvFilePathForStockSymbols()+"/nasdaqlisted.txt");
-									
-							
-							for(Stock s: (stocksMap.values()) )
-							{
-								s.setVctor(s.getAlldaysFeatures());
+				try {
+					
+					URLStockHandler urlStockHandler = new URLStockHandler(new Integer(numberOfStocks), new Integer(analyze),(String[])features.toArray(new String[features.size()]));
+					HashMap<String, Stock> stocksMap = urlStockHandler.connectAndReadStocks(userProperties.getCsvFilePathForStockSymbols()+"/nasdaqlisted.txt");
+					for(Stock s: (stocksMap.values()) )
+					{
+						s.setVctor(s.getAlldaysFeatures());
 
-							}
-							MinMaxNormalizer minMax= new MinMaxNormalizer();
-							minMax.normalizeData(stocksMap.values(), 100.0, 0.0);
-							for(Stock s: (stocksMap.values()) )
-							{
-								System.out.println(s.toFullString());
-							}
+					}
+					MinMaxNormalizer minMax= new MinMaxNormalizer();
+					minMax.normalizeData(stocksMap.values(), 100.0, 0.0);
+					for(Stock s: (stocksMap.values()) )
+					{
+						System.out.println(s.toFullString());
+					}
+					
+					
+					int numOfFiles=0;
+					int lineCounter=0;
+					
+					CSVWriter csvWriter = new CSVWriter(new FileWriter(userProperties.getCsvFilePathForStockSymbols()+"/vectors_"+numOfFiles+".csv"), ',' );
+					for(Stock s:(stocksMap.values()) )
+					{
+						
+						if(lineCounter<10)
+						{
 							
-							
-							int numOfFiles=0;
-							int lineCounter=0;
-							
-							CSVWriter csvWriter = new CSVWriter(new FileWriter(userProperties.getCsvFilePathForStockSymbols()+"/vectors_"+numOfFiles+".csv"), ',' );
-							for(Stock s:(stocksMap.values()) )
-							{
-								
-								if(lineCounter<10)
-								{
-									
-									System.out.println("File number:" + numOfFiles);
-									System.out.println("Inserting line:" + lineCounter);
-									System.out.println(s.getVectorString());
-									lineCounter++;
-									csvWriter.writeNext(s.getVectorString().split(","));
-								}
-								else
-								{
-									csvWriter.close();
-									numOfFiles++;
-									lineCounter=0;
-									csvWriter = new CSVWriter(new FileWriter(userProperties.getCsvFilePathForStockSymbols()+"/vectors_"+numOfFiles+".csv"), ',' );
-									System.out.println("File number:" + numOfFiles);
-									System.out.println("Inserting line:" + lineCounter);
-									System.out.println(s.getVectorString());
-									lineCounter++;
-									csvWriter.writeNext(s.getVectorString().split(","));
-								}
-							}
-							csvWriter.close();
-							
-							csvWriter = new CSVWriter(new FileWriter("Output/vectors.csv"), ',' );
-							for(Stock s: (stocksMap.values()) )
-							{
-								csvWriter.writeNext(s.getVectorString().split(","));
-							}
-							csvWriter.close();
-							System.out.println("Finish with CSV's");
-
-							String rootFolder = hadoopProperties.getJobServerInputFolderPath();
-							String outputFolder = hadoopProperties.getJobServerOutputFolderPath();
-							String vectorsFolder = rootFolder+"/vectors";
-							String jarpath = rootFolder+"/solution";
-							
-							//This code was under comment in order to save time for graph development.				
-							//Connecting to cloudera hadoop and transfering files
-							sshConnect(userProperties.getHost(),userProperties.getUserName(), userProperties.getPassword());
-							System.out.println("Connected to Hadoop cloudera");
-							executeCommand("rm -Rf "+rootFolder);
-							executeCommand("mkdir "+rootFolder+"; mkdir "+vectorsFolder);
-							//executeCommand("rm /home/training/HadoopProperties.xml ; rm /home/training/vectors.csv");
-							executeCommand("rm -Rf "+outputFolder+" ;mkdir "+outputFolder); 
-							System.out.println("Created: "+rootFolder+ vectorsFolder+" ,"+outputFolder);
-							transferFile("Settings/HadoopProperties.xml", rootFolder);
-							System.out.println("Created hadoopProperties.xml - "+rootFolder);
-							for(int file=0;file<=numOfFiles;file++)
-							{
-								String fileName = userProperties.getCsvFilePathForStockSymbols()+"/vectors_"+file+".csv";
-								File f= new File(fileName);
-								if(f.exists())
-								{
-									System.out.println("Transfering:"+f.getName() + "To:" +vectorsFolder);
-									transferFile(fileName, vectorsFolder);
-									System.out.println("File has been transfered successfuly");
-								}
-							}
-							
-							System.out.println("finish with all files transfering");
-							//transferFile("input/stocks/clustering.jar", "/home/training");
-							executeCommand("hadoop fs -rmr /home");
-							System.out.println("Creating Folders in HDFS");
-							executeCommand("hadoop fs -mkdir home; hadoop fs -mkdir /home/training; hadoop fs -mkdir /home/training/clustering; hadoop fs -mkdir /home/training/clustering/vectors");
-							System.out.println("Uploading files to HDFS");
-							System.out.println("move the stock files from linux fs to hadoop fs.");
-							executeCommand("hadoop fs -put "+rootFolder+ "/HadoopProperties.xml "+ hadoopProperties.getJobServerInputFolderPath());
-							executeCommand("hadoop fs -put "+vectorsFolder+" "+ hadoopProperties.getJobServerInputFolderPath());
-							System.out.println("Building the jar");
-							
-							executeCommand("mkdir "+jarpath);
-							File f= new File("input/stocks/Hadoop");
-							if(f.isDirectory())
-							{
-								File[] javaFiles = f.listFiles();
-								for(File javaFile : javaFiles)
-								{
-									System.out.println("Transfering " + javaFile.getPath());
-									transferFile(javaFile.getPath(), jarpath);
-								}
-								
-							}
-							System.out.println("Transfered all java files, compiling them");
-							executeCommand("cd "+ rootFolder+ " ; export HCP=`hadoop classpath`; javac -classpath $HCP solution/*.java; jar cvf clustering.jar solution/*.class");
-							System.out.println("Running the job.");
-							executeCommand("hadoop jar "+rootFolder+"/clustering.jar solution.Driver /home/training/clustering");
-							System.out.println("getting the files from hadoop to cloudera locally.");
-							executeCommand("hadoop fs -get "+hadoopProperties.getJobServerOutputFolderPath()+"/part-r-00000 "+ hadoopProperties.getJobServerOutputFolderPath());
-							System.out.println("transfer the file to windows.");
-							getFIleByName(hadoopProperties.getJobServerOutputFolderPath()+"/part-r-00000");
-							//Return the analyzed stocks to view in order to create the user graphs.
-							finalstocksMap = stocksMap;
-							setModelCommand(5);
-				
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							System.out.println("File number:" + numOfFiles);
+							System.out.println("Inserting line:" + lineCounter);
+							System.out.println(s.getVectorString());
+							lineCounter++;
+							csvWriter.writeNext(s.getVectorString().split(","));
 						}
-						System.out.println("Finished!");
-				
+						else
+						{
+							csvWriter.close();
+							numOfFiles++;
+							lineCounter=0;
+							csvWriter = new CSVWriter(new FileWriter(userProperties.getCsvFilePathForStockSymbols()+"/vectors_"+numOfFiles+".csv"), ',' );
+							System.out.println("File number:" + numOfFiles);
+							System.out.println("Inserting line:" + lineCounter);
+							System.out.println(s.getVectorString());
+							lineCounter++;
+							csvWriter.writeNext(s.getVectorString().split(","));
+						}
+					}
+					csvWriter.close();
+					
+					csvWriter = new CSVWriter(new FileWriter("Output/vectors.csv"), ',' );
+					for(Stock s: (stocksMap.values()) )
+					{
+						csvWriter.writeNext(s.getVectorString().split(","));
+					}
+					csvWriter.close();
+					System.out.println("Finish with CSV's");
+
+					String rootFolder = hadoopProperties.getJobServerInputFolderPath();
+					String outputFolder = hadoopProperties.getJobServerOutputFolderPath();
+					String vectorsFolder = rootFolder+"/vectors";
+					String jarpath = rootFolder+"/solution";
+					
+					//This code was under comment in order to save time for graph development.				
+					//Connecting to cloudera hadoop and transfering files
+					sshConnect(userProperties.getHost(),userProperties.getUserName(), userProperties.getPassword());
+					System.out.println("Connected to Hadoop cloudera");
+					executeCommand("rm -Rf "+rootFolder);
+					executeCommand("mkdir "+rootFolder+"; mkdir "+vectorsFolder);
+					//executeCommand("rm /home/training/HadoopProperties.xml ; rm /home/training/vectors.csv");
+					executeCommand("rm -Rf "+outputFolder+" ;mkdir "+outputFolder); 
+					System.out.println("Created: "+rootFolder+ vectorsFolder+" ,"+outputFolder);
+					transferFile("Settings/HadoopProperties.xml", rootFolder);
+					System.out.println("Created hadoopProperties.xml - "+rootFolder);
+					for(int file=0;file<=numOfFiles;file++)
+					{
+						String fileName = userProperties.getCsvFilePathForStockSymbols()+"/vectors_"+file+".csv";
+						File f= new File(fileName);
+						if(f.exists())
+						{
+							System.out.println("Transfering:"+f.getName() + "To:" +vectorsFolder);
+							transferFile(fileName, vectorsFolder);
+							System.out.println("File has been transfered successfuly");
+						}
+					}
+					
+					System.out.println("finish with all files transfering");
+					//transferFile("input/stocks/clustering.jar", "/home/training");
+					executeCommand("hadoop fs -rmr /home");
+					System.out.println("Creating Folders in HDFS");
+					executeCommand("hadoop fs -mkdir home; hadoop fs -mkdir /home/training; hadoop fs -mkdir /home/training/clustering; hadoop fs -mkdir /home/training/clustering/vectors");
+					System.out.println("Uploading files to HDFS");
+					System.out.println("move the stock files from linux fs to hadoop fs.");
+					executeCommand("hadoop fs -put "+rootFolder+ "/HadoopProperties.xml "+ hadoopProperties.getJobServerInputFolderPath());
+					executeCommand("hadoop fs -put "+vectorsFolder+" "+ hadoopProperties.getJobServerInputFolderPath());
+					System.out.println("Building the jar");
+					
+					executeCommand("mkdir "+jarpath);
+					File f= new File("input/stocks/Hadoop");
+					if(f.isDirectory())
+					{
+						File[] javaFiles = f.listFiles();
+						for(File javaFile : javaFiles)
+						{
+							System.out.println("Transfering " + javaFile.getPath());
+							transferFile(javaFile.getPath(), jarpath);
+						}
+						
+					}
+					executeCommand("chmod -R 777"+rootFolder);
+					System.out.println("Transfered all java files, compiling them");
+					executeCommand("cd "+ rootFolder+ " ; export HCP=`hadoop classpath`; javac -classpath $HCP solution/*.java; jar cvf clustering.jar solution/*.class");
+					System.out.println("Running the job.");
+					executeCommand("hadoop jar "+rootFolder+"/clustering.jar solution.Driver /home/training/clustering");
+					System.out.println("getting the files from hadoop to cloudera locally.");
+					executeCommand("hadoop fs -get "+hadoopProperties.getJobServerOutputFolderPath()+"/part-r-00000 "+ hadoopProperties.getJobServerOutputFolderPath());
+					System.out.println("transfer the file to windows.");
+					getFIleByName(hadoopProperties.getJobServerOutputFolderPath()+"/part-r-00000");
+					//Return the analyzed stocks to view in order to create the user graphs.
+					finalstocksMap = stocksMap;
+					setModelCommand(5);
+		
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				System.out.println("Finished!");
 			}
 		});
 		t.start();

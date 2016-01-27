@@ -29,49 +29,29 @@ public class KMeansMapper extends Mapper<LongWritable,Text, CenterCentroidWritab
 		Configuration conf = context.getConfiguration();
 		FileSystem fs = FileSystem.get(conf);
 		rootFolder = context.getConfiguration().get("rootFolder");
-		System.out.println(rootFolder);
 		Path canopyCentroidTuplePath = new Path(rootFolder+ "/files/KmeansCentroids/centerCentroidTuple.seq");
 		@SuppressWarnings("deprecation")
 		SequenceFile.Reader canopyCentroidtupleReader = new SequenceFile.Reader(fs, canopyCentroidTuplePath,conf);
 		CenterCentroidWritableComparable key = new CenterCentroidWritableComparable();
 		IntWritable value = new IntWritable();
-		System.out.println("***************************Kmeans mapper******************8");
+		
+		//Adding the tuples to list 
 		while (canopyCentroidtupleReader.next(key, value)) {
-			System.out.println("When reading");
-			System.out.println(key);
 			CenterCentroidArr.add(new CenterCentroidWritableComparable(key));
 		}
 		
+		//Adding the Centroids to hashmap with the right key.
 		for(CenterCentroidWritableComparable tuple:CenterCentroidArr) {
 			if(canopyToCentroidsMap.containsKey(tuple.getCenter())) {
-				System.out.println("canopyToCentroidsMap contained tuple center");
 				canopyToCentroidsMap.get(tuple.getCenter()).add(tuple.getCentroid());
 			}
 			else {
-				System.out.println("canopyToCentroidsMap did not contains tuple center");
 				ArrayList<ClusterCenter> centroids = new ArrayList<ClusterCenter>();
 				centroids.add(tuple.getCentroid());
 				canopyToCentroidsMap.put(tuple.getCenter(), centroids);
 			}
 		}
 		canopyCentroidtupleReader.close();
-		System.out.println("******************Kmeans Mapper: Validating reader***********");
-		for(CenterCentroidWritableComparable c:CenterCentroidArr) {
-			System.out.println(c);
-		}
-		System.out.println("******************Kmeans Mapper:Done with Validating reader***********");
-		System.out.println("******************Kmeans Mapper:Validating canopyToCentroidsMap***********");
-		System.out.println("Validate canopyToCentroidsMap has 2 keys: "+ canopyToCentroidsMap.keySet().size());
-		for(ClusterCenter clusterCenterKey:canopyToCentroidsMap.keySet()) {
-			System.out.println("For cluster Center: " +clusterCenterKey);
-			System.out.println("\t-----------------------------------");
-			for(ClusterCenter centroid: canopyToCentroidsMap.get(clusterCenterKey)) {
-				System.out.println("\t Centroid:");
-				System.out.println("\t "+centroid);
-			}
-			System.out.println("\t-----------------------------------");
-		}
-		System.out.println("******************Kmeans Mapper:Done Validating canopyToCentroidsMap***********");
 	}
 	
 
@@ -117,26 +97,6 @@ public class KMeansMapper extends Mapper<LongWritable,Text, CenterCentroidWritab
 		}
 		
 		CenterCentroidWritableComparable keyToSend = new CenterCentroidWritableComparable(nearestCenter, nearestCentroid);
-		if(!CenterCentroidArr.contains(keyToSend)) {
-			System.out.println("****************************************************");
-			System.out.println("********************Logical error 1!****************");
-			System.out.println("****************************************************");
-			System.exit(1);
-		}
-		if(!canopyToCentroidsMap.containsKey(keyToSend.getCenter())) {
-			System.out.println("****************************************************");
-			System.out.println("**********************Logical error 2!**************");
-			System.out.println("****************************************************");
-			System.exit(1);
-		}
-		if(canopyToCentroidsMap.containsKey(keyToSend.getCenter())) {
-			if(!(canopyToCentroidsMap.get(keyToSend.getCenter()).contains(keyToSend.getCentroid()))) {
-				System.out.println("****************************************************");
-				System.out.println("********************Logical error 3!****************");
-				System.out.println("****************************************************");
-				System.exit(1);
-			}
-		}
 		context.write(keyToSend,newVector);
 	}
 }

@@ -15,7 +15,6 @@ public class CenterCentroidWritableComparable  implements WritableComparable<Cen
 		super();
 	}
 	
-
 	public CenterCentroidWritableComparable(ClusterCenter center, ClusterCenter centroid) {
 		super();
 		this.center = new ClusterCenter(center);
@@ -33,16 +32,11 @@ public class CenterCentroidWritableComparable  implements WritableComparable<Cen
 		return this.toString().hashCode();
 	}
 	
-	
-
 	@Override
 	public boolean equals(Object obj) {
 		return this.toString().equals(obj.toString());
 	}
 	
-	
-	
-
 	@Override
 	public void write(DataOutput out) throws IOException {
 		center.write(out);
@@ -57,13 +51,6 @@ public class CenterCentroidWritableComparable  implements WritableComparable<Cen
 		
 		centroid.readFields(in);
 	}
-
-/*	@Override
-	public int compareTo(CenterCentroidWritableComparable o) {
-		if(center.compareTo(o.getCenter())==0)
-				return centroid.compareTo(o.getCentroid());
-		return 1;
-	}*/
 	
     public Double m_length() {
         int centerSize = center.getCenter().getVectorArr().length;

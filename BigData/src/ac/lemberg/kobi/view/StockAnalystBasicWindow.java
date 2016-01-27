@@ -121,30 +121,12 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 						}
 						else
 						{
-							MessageBox messageBox = new MessageBox(shell, SWT.ICON_WARNING | SWT.ABORT | SWT.RETRY | SWT.IGNORE);
+							MessageBox messageBox = new MessageBox(shell, SWT.ICON_WARNING | SWT.ABORT);
 					        messageBox.setText("Warning");
 					        messageBox.setMessage("Fill All the Board!");
 					        messageBox.open();
 						}
 					}
-					/*else if (startStopButton.getText().toString().equals("Working"))
-					{
-						startStopButton.setText("Start job");
-						Thread t = new Thread(new Runnable() {	
-							@Override
-							public void run() {
-								//remoteSolve();
-								disconnect();
-								Display.getDefault().asyncExec(new Runnable() {
-									public void run() {
-										serverStatus.setText("Status: Off.");
-										startStopButton.setEnabled(true);
-									}
-								});
-							}
-						});
-						t.start();
-					}*/
 				}
 					
 			
@@ -204,13 +186,6 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 	 * {@inheritDoc}
 	 */
 	public void displayData(Object data) {
-		/*System.out.println(data.toString());
-		if(data.equals("Done"))
-		{
-			setUserCommand(100);
-			notifyObservers(new String[]{"1"});
-		}
-		*/
 	}
 	
 	@Override

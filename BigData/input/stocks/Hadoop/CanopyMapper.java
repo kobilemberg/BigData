@@ -18,7 +18,6 @@ public class CanopyMapper extends Mapper<LongWritable, Text, IntWritable, Cluste
 	protected void setup(Context context) throws IOException, InterruptedException {
 		super.setup(context);
 		this.centers = new LinkedList<ClusterCenter>();
-		System.out.println("Map");
 	}
 
 	@Override

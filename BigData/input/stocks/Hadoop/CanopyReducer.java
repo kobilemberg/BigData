@@ -19,7 +19,6 @@ public class CanopyReducer extends Reducer<IntWritable,ClusterCenter,ClusterCent
 	List<ClusterCenter> canopyClusterCenters;
 	@Override
 	protected void setup(Context context) throws IOException, InterruptedException {
-		System.out.println("Setup");
 		super.setup(context);
 		this.canopyClusterCenters = new LinkedList<ClusterCenter>();
 	}
@@ -27,7 +26,6 @@ public class CanopyReducer extends Reducer<IntWritable,ClusterCenter,ClusterCent
 	@Override
 	protected void reduce(IntWritable key, Iterable<ClusterCenter> values,Context context) throws IOException, InterruptedException {
 		for(ClusterCenter valueCenter : values) {
-			System.out.println("Value:"+valueCenter);
 			boolean isClose=false;
 			for (ClusterCenter centerList : canopyClusterCenters) {
 				double distance = DistanceMeasurer.measureDistance(centerList, valueCenter.getCenter());
@@ -50,25 +48,17 @@ public class CanopyReducer extends Reducer<IntWritable,ClusterCenter,ClusterCent
 	@Override
 	protected void cleanup(Context context) throws IOException,InterruptedException
 	{
-		System.out.println("CleanUp");
-		System.out.println("canopyClusterCenters:"+canopyClusterCenters);
 		//Write sequence file with results of Canopy Cluster Center, Number of Cluster Center neighbors.
 		super.cleanup(context);
-		//System.out.println("NUm Of Vectors:"+ numOfVectors);
 		FileSystem fs = FileSystem.get(context.getConfiguration());
 		String rootFolder = context.getConfiguration().get("rootFolder");
 		System.out.println(rootFolder);
 		Path canopy = new Path(rootFolder+"/files/CanopyClusterCenters/canopyCenters.seq");
-		//Path canopy = new Path("files/CanopyClusterCenters/canopyCenters.seq");
 		context.getConfiguration().set("canopy.path",canopy.toString());
 		
 		@SuppressWarnings("deprecation")
 		final SequenceFile.Writer centerWriter = SequenceFile.createWriter(fs,context.getConfiguration(), canopy , ClusterCenter.class,IntWritable.class);
-		System.out.println("before for");
 		for (ClusterCenter center : canopyClusterCenters) {
-			System.out.println("Adding CanopyClustercENTER:");
-			System.out.println(center);
-			System.out.println("nEIGHBORS:"+center.getNeighbors());
 			centerWriter.append(center,new IntWritable(center.getNeighbors()));
 		}
 		centerWriter.close();	
