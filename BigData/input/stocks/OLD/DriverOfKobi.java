@@ -136,13 +136,10 @@ public class Driver {
 					break;
 				}
 			}
-		}
-		
-		
-		
-		
-
-			//Check if there is Canopy with k==1. if there is, take from someone that have 3 or  more (Assuming K is significantly larger then number of Canopies Cluster Center).
+		}	
+		if(totalClustersNum>3)
+		{
+			//Check if there is Canopy with k==1. if there is, take from someone that have 3 or  more.
 			while (canopyDivisionOfCentroidsMap.containsValue(1)){
 				for (Entry<ClusterCenter, Integer> entrySet : canopyDivisionOfCentroidsMap.entrySet()) {
 					Integer value = entrySet.getValue();
@@ -156,8 +153,8 @@ public class Driver {
 					}
 				}
 			}
-
-	
+		}
+		
 		
 		
 		//Create arrayList of of CenterCentroidWritableComparable (tuple combined from CanopyCluster Center and Centroid)
@@ -167,6 +164,8 @@ public class Driver {
 		{
 			//For each CLuster Center Create Centroids that Close enough to him( distance form Cluster Center to its Centroid is less then T1)
 			int centroidNumber = entrySet.getValue().intValue();
+			if(centroidNumber>1)
+			{
 				for (int i = 0; i < centroidNumber; i++) {
 					int centroidVectorSize = entrySet.getKey().getCenter().getVectorArr().length;
 					double[] centroidvectorArr = new double [centroidVectorSize];
@@ -182,6 +181,13 @@ public class Driver {
 					CenterCentroidWritableComparable newCenterCentroid = new CenterCentroidWritableComparable(entrySet.getKey(),new ClusterCenter(centroid));
 					centerCentroidArrayList.add(newCenterCentroid);
 				}
+			}
+			else
+			{
+				centroidID++;
+				CenterCentroidWritableComparable newCenterCentroid = new CenterCentroidWritableComparable(entrySet.getKey(),entrySet.getKey());
+				centerCentroidArrayList.add(newCenterCentroid);
+			}
 		}
 		//Writing the list to file in oreder to have access from KMeans job.
 		Path centerToCentroidTuple = new Path(rootFolder+ "/files/KmeansCentroids/centerCentroidTuple.seq");

@@ -5,7 +5,7 @@ package solution;
 public class DistanceMeasurer {
 
 	public static final double T1 = 4125;
-	public static final double T2 = 10;
+	public static final double T2 = 0;
 
 
 	public static final double measureDistance(ClusterCenter center, Vector v) {

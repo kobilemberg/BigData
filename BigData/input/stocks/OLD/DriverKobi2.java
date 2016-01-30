@@ -115,7 +115,7 @@ public class Driver {
 			Double value_of_vectors_for_neighbors = new Double(neighbors.get())/totalVectorsToDivine;
 			Double value_of_vector_divided_by_stocks = value_of_vectors_for_neighbors*totalClustersNum;
 			//Removing Centers with low amount of data
-			if(value_of_vector_divided_by_stocks>=1)
+			if(value_of_vector_divided_by_stocks>1)
 			{
 					canopyDivisionOfCentroidsMap.put(centerReader, (value_of_vector_divided_by_stocks).intValue());
 					sum = sum + (value_of_vector_divided_by_stocks).intValue();
@@ -136,13 +136,9 @@ public class Driver {
 					break;
 				}
 			}
-		}
+		}	
 		
-		
-		
-		
-
-			//Check if there is Canopy with k==1. if there is, take from someone that have 3 or  more (Assuming K is significantly larger then number of Canopies Cluster Center).
+			//Check if there is Canopy with k==1. if there is, take from someone that have 3 or  more.
 			while (canopyDivisionOfCentroidsMap.containsValue(1)){
 				for (Entry<ClusterCenter, Integer> entrySet : canopyDivisionOfCentroidsMap.entrySet()) {
 					Integer value = entrySet.getValue();
@@ -156,8 +152,61 @@ public class Driver {
 					}
 				}
 			}
-
-	
+		
+				boolean removed;
+				int index=0;
+				
+				for(int i=0; i< canopyDivisionOfCentroidsMap.entrySet().)
+				
+				
+				for (Entry<ClusterCenter, Integer> entrySet : canopyDivisionOfCentroidsMap.entrySet()) {
+					Integer value = entrySet.getValue();
+					if (value==1||value==0){
+						for (ClusterCenter canopyCenter : canopyDivisionOfCentroidsMap.keySet()){
+							if (canopyDivisionOfCentroidsMap.get(canopyCenter)>=3 || canopyDivisionOfCentroidsMap.get(canopyCenter)>=3.0 ){
+								canopyDivisionOfCentroidsMap.put(canopyCenter, canopyDivisionOfCentroidsMap.get(canopyCenter)-1);
+								canopyDivisionOfCentroidsMap.put(entrySet.getKey(), entrySet.getValue()+1);
+							}
+						}
+					}
+				}
+			
+			
+			
+			
+	/*
+		//Check if still we have Canopies with 
+		int kToAdd=0;
+		ArrayList<ClusterCenter> centersToRemove = new ArrayList<ClusterCenter>();
+			for(ClusterCenter canopyCenter: canopyDivisionOfCentroidsMap)
+			{
+				if(canopyDivisionOfCentroidsMap.get(canopyCenter)==1)
+				{
+					centersToRemove.add(canopyCenter);
+				}
+			}
+		
+		
+		for(ClusterCenter canopyCenter: centersToRemove)
+		{
+			kToAdd++;
+			canopyDivisionOfCentroidsMap.remove(canopyCenter);
+		}
+		
+		if(kToAdd>0) {
+			
+			ArrayList<Integer> KArr = new ArrayList<Integer>(canopyDivisionOfCentroidsMap.values());
+			Collections.sort(KArr);
+			Integer[] sortedK = KArr.toArray(new Integer[]{});
+			for(ClusterCenter clusterCenter : canopyDivisionOfCentroidsMap.keySet()) {
+				if(canopyDivisionOfCentroidsMap.get(clusterCenter)==sortedK[0]) {
+					canopyDivisionOfCentroidsMap.put(clusterCenter,sortedK[0]+kToAdd);
+					
+				}
+			}
+			
+		}	*/
+		
 		
 		
 		//Create arrayList of of CenterCentroidWritableComparable (tuple combined from CanopyCluster Center and Centroid)

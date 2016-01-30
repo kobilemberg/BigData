@@ -136,13 +136,10 @@ public class Driver {
 					break;
 				}
 			}
-		}
-		
-		
-		
-		
-
-			//Check if there is Canopy with k==1. if there is, take from someone that have 3 or  more (Assuming K is significantly larger then number of Canopies Cluster Center).
+		}	
+		if(totalClustersNum>3)
+		{
+			//Check if there is Canopy with k==1. if there is, take from someone that have 3 or  more.
 			while (canopyDivisionOfCentroidsMap.containsValue(1)){
 				for (Entry<ClusterCenter, Integer> entrySet : canopyDivisionOfCentroidsMap.entrySet()) {
 					Integer value = entrySet.getValue();
@@ -156,8 +153,40 @@ public class Driver {
 					}
 				}
 			}
-
+		}
 	
+		//Check if still we have Canopies with k=1, if so remove them from list
+		int kToAdd=0;
+		ArrayList<ClusterCenter> centersToRemove = new ArrayList<ClusterCenter>();
+			for(ClusterCenter canopyCenter: canopyDivisionOfCentroidsMap)
+			{
+				if(canopyDivisionOfCentroidsMap.get(canopyCenter)==1)
+				{
+					centersToRemove.add(canopyCenter);
+				}
+			}
+		
+		
+		for(ClusterCenter canopyCenter: centersToRemove)
+		{
+			kToAdd++;
+			canopyDivisionOfCentroidsMap.remove(canopyCenter);
+		}
+		
+		if(kToAdd>0) {
+			
+			ArrayList<Integer> KArr = new ArrayList<Integer>(canopyDivisionOfCentroidsMap.values());
+			Collections.sort(KArr);
+			Integer[] sortedK = KArr.toArray(new Integer[]{});
+			for(ClusterCenter clusterCenter : canopyDivisionOfCentroidsMap.keySet()) {
+				if(canopyDivisionOfCentroidsMap.get(clusterCenter)==sortedK[0]) {
+					canopyDivisionOfCentroidsMap.put(clusterCenter,sortedK[0]+kToAdd);
+					
+				}
+			}
+			
+		}	
+		
 		
 		
 		//Create arrayList of of CenterCentroidWritableComparable (tuple combined from CanopyCluster Center and Centroid)
