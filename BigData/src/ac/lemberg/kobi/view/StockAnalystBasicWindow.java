@@ -69,8 +69,6 @@ public class StockAnalystBasicWindow extends BasicWindow implements View{
 		serverForm.setLayout(rowLayout);
 		serverTab.setControl(serverForm);
 		serverAddress = createLabel(serverForm, SWT.NULL, "Host:"+properties.getHost());
-		//Label numberOfStocks = new Label(serverForm, SWT.NULL);
-		//numberOfStocks.setText("Number of Stocks: ");
 		Label labelStocks = createLabel(serverForm, SWT.NONE, "Number of Stocks: ", 110, 15);
 		Text textStocks = createText(serverForm, SWT.SINGLE | SWT.BORDER, " ");
 		Label labelAnalyze = createLabel(serverForm, SWT.None, "Days backwards: ",110,15);

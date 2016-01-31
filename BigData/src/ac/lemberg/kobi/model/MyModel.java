@@ -65,7 +65,6 @@ public class MyModel extends Observable implements Model{
 		sshConnection = new SSHAdapter(userName, password, host);
 		data = "Connection has been created.";
 		flag = true;
-
 		setModelCommand(1);
 	}
 
@@ -271,7 +270,6 @@ public class MyModel extends Observable implements Model{
 					String vectorsFolder = rootFolder+"/vectors";
 					String jarpath = rootFolder+"/solution";
 					
-					//This code was under comment in order to save time for graph development.				
 					//Connecting to cloudera hadoop and transfering files
 					sshConnect(userProperties.getHost(),userProperties.getUserName(), userProperties.getPassword());
 					System.out.println("Connected to Hadoop cloudera");
@@ -288,19 +286,17 @@ public class MyModel extends Observable implements Model{
 						File f= new File(fileName);
 						if(f.exists())
 						{
-							System.out.println("Transfering:"+f.getName() + "To:" +vectorsFolder);
+							System.out.println("Transfering: "+f.getName() + " To: " +vectorsFolder);
 							transferFile(fileName, vectorsFolder);
 							System.out.println("File has been transfered successfuly");
 						}
 					}
 					
-					System.out.println("finish with all files transfering");
-					//transferFile("input/stocks/clustering.jar", "/home/training");
+					System.out.println("All files was transfered");
 					executeCommand("hadoop fs -rmr /home");
-					System.out.println("Creating Folders in HDFS");
+					System.out.println("Creating folders in HDFS");
 					executeCommand("hadoop fs -mkdir home; hadoop fs -mkdir /home/training; hadoop fs -mkdir /home/training/clustering; hadoop fs -mkdir /home/training/clustering/vectors");
 					System.out.println("Uploading files to HDFS");
-					System.out.println("move the stock files from linux fs to hadoop fs.");
 					executeCommand("hadoop fs -put "+rootFolder+ "/HadoopProperties.xml "+ hadoopProperties.getJobServerInputFolderPath());
 					executeCommand("hadoop fs -put "+vectorsFolder+" "+ hadoopProperties.getJobServerInputFolderPath());
 					System.out.println("Building the jar");
@@ -317,14 +313,15 @@ public class MyModel extends Observable implements Model{
 						}
 						
 					}
+					//We are adding permissions because we edit Hadoop java files in windows.
 					executeCommand("chmod -R 777"+rootFolder);
 					System.out.println("Transfered all java files, compiling them");
 					executeCommand("cd "+ rootFolder+ " ; export HCP=`hadoop classpath`; javac -classpath $HCP solution/*.java; jar cvf clustering.jar solution/*.class");
 					System.out.println("Running the job.");
 					executeCommand("hadoop jar "+rootFolder+"/clustering.jar solution.Driver /home/training/clustering");
-					System.out.println("getting the files from hadoop to cloudera locally.");
+					System.out.println("Move the files from HDFS to linux FS.");
 					executeCommand("hadoop fs -get "+hadoopProperties.getJobServerOutputFolderPath()+"/part-r-00000 "+ hadoopProperties.getJobServerOutputFolderPath());
-					System.out.println("transfer the file to windows.");
+					System.out.println("Copy result file from linux to windows.");
 					getFIleByName(hadoopProperties.getJobServerOutputFolderPath()+"/part-r-00000");
 					//Return the analyzed stocks to view in order to create the user graphs.
 					finalstocksMap = stocksMap;
