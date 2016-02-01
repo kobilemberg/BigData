@@ -71,7 +71,6 @@ public class KMeansReducer extends Reducer<CenterCentroidWritableComparable, Vec
 			//Check that the is changes need to be done - Vectors are not close yet
 			context.getCounter(Counter.CONVERGED).increment(1);
 		}
-		//context.write(new Text(comparisonCentroid.getCenter().getName().toString()), new Text(comparisonCentroid.toString()));
 	}
 
 	@SuppressWarnings({ "deprecation"})
