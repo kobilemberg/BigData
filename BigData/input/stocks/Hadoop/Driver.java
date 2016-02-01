@@ -2,7 +2,6 @@ package solution;
 
 import java.beans.XMLDecoder;
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -32,7 +31,6 @@ import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 public class Driver {
 	
 	
-	@SuppressWarnings("unused")
 	private static final Log LOG = LogFactory.getLog(Driver.class);
 	
 	@SuppressWarnings("deprecation")
@@ -120,8 +118,6 @@ public class Driver {
 					canopyDivisionOfCentroidsMap.put(centerReader, (value_of_vector_divided_by_stocks).intValue());
 					sum = sum + (value_of_vector_divided_by_stocks).intValue();
 			}
-			else
-				System.out.println("Removed: " + value_of_vector_divided_by_stocks);
 		}
 		canopyCentersReader.close();
 		
@@ -187,7 +183,6 @@ public class Driver {
 		Path centerToCentroidTuple = new Path(rootFolder+ "/files/KmeansCentroids/centerCentroidTuple.seq");
 		final SequenceFile.Writer tupleCenterCentroid = SequenceFile.createWriter(fs,jobConfigurations, centerToCentroidTuple, CenterCentroidWritableComparable.class, IntWritable.class);
 		for (CenterCentroidWritableComparable ccw : centerCentroidArrayList) {
-			System.out.println(ccw);
 			tupleCenterCentroid.append(ccw, new IntWritable(1));
 		}
 		tupleCenterCentroid.close();
@@ -218,7 +213,6 @@ public class Driver {
 		if(counter>totalClustersNum)
 		{
 			System.out.println("Warning: totalClustersNum: "+totalClustersNum+", Counter:"+counter);
-			System.exit(1);
 		}
 		iteration++;
 		while (counter > 0) {
@@ -247,7 +241,6 @@ public class Driver {
 			if(counter>totalClustersNum)
 			{
 				System.out.println("Warning: totalClustersNum: "+totalClustersNum+", Counter:"+counter);
-				System.exit(1);
 			}
 		}
 		//Running final itteration with KmeansMapper and special reducer that will write the file.

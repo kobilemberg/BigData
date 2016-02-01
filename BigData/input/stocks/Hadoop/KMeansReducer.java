@@ -71,10 +71,10 @@ public class KMeansReducer extends Reducer<CenterCentroidWritableComparable, Vec
 			//Check that the is changes need to be done - Vectors are not close yet
 			context.getCounter(Counter.CONVERGED).increment(1);
 		}
-		context.write(new Text(comparisonCentroid.getCenter().getName().toString()), new Text(comparisonCentroid.toString()));
+		//context.write(new Text(comparisonCentroid.getCenter().getName().toString()), new Text(comparisonCentroid.toString()));
 	}
 
-	@SuppressWarnings({ "deprecation", "resource" })
+	@SuppressWarnings({ "deprecation"})
 	@Override
 	protected void cleanup(Context context) throws IOException,InterruptedException {
 		//Go over updated vector list, find the updated vector from the HashMap, find the index of the new updated vector,

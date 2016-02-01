@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <java version="1.8.0_51" class="java.beans.XMLDecoder">
  <object class="solution.HadoopProperties">
+  <void property="close">
+   <boolean>true</boolean>
+  </void>
   <void property="high">
    <boolean>true</boolean>
   </void>
@@ -20,10 +23,10 @@
    <int>30</int>
   </void>
   <void property="numOfFeatures">
-   <int>3</int>
+   <int>4</int>
   </void>
   <void property="numOfStocks">
-   <int>100</int>
+   <int>200</int>
   </void>
   <void property="open">
    <boolean>true</boolean>
