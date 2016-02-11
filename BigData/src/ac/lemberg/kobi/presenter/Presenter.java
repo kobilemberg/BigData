@@ -56,7 +56,6 @@ public class Presenter implements Observer {
 				@Override
 				public void doCommand(String[] args) 
 				{
-					//args[1] = name
 					try {
 						view.setUserCommand(3);
 						((Observable)view).notifyObservers(args);

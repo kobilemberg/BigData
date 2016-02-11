@@ -12,7 +12,6 @@ import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
-//for commit
 
 public class KMeansMapper extends Mapper<LongWritable,Text, CenterCentroidWritableComparable, Vector> {	 
 	

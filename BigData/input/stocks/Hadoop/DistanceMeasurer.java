@@ -1,5 +1,4 @@
 package solution;
-//for commit
 
 
 public class DistanceMeasurer {

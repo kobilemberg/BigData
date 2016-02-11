@@ -165,10 +165,7 @@ public class Stock implements Vector{
 
 	@Override
 	public String getVectorString() {
-		
-
-	    //String strToRet= this.name+",";
-		return this.name+","+Arrays.toString(vector).substring(1,Arrays.toString(vector).length()-1 );
+				return this.name+","+Arrays.toString(vector).substring(1,Arrays.toString(vector).length()-1 );
 
 	}
 	

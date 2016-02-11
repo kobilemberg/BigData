@@ -26,7 +26,6 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 
 
-//for commit
 
 public class Driver {
 	
@@ -91,7 +90,7 @@ public class Driver {
 		 
 		@SuppressWarnings("unused")
 		boolean success = canopyJob.waitForCompletion(true);
-		//*****************Finish with Canopy, Starting calculate Centroids for each Cluster Center**********//
+		//Finish with Canopy, Starting calculate Centroids for each Cluster Center//
 		
 		//Creating random object in order to calculate Centroids of each ClusterCenter by his members ratio
 		Random rand = new Random();

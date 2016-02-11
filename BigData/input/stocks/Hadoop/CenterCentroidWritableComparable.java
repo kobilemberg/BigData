@@ -1,12 +1,10 @@
 package solution;
-//for commit
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import org.apache.hadoop.io.WritableComparable;
 
-//extends Vector
 public class CenterCentroidWritableComparable  implements WritableComparable<CenterCentroidWritableComparable> {
 	private ClusterCenter center;
 	private ClusterCenter centroid;

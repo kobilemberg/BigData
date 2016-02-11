@@ -275,7 +275,6 @@ public class MyModel extends Observable implements Model{
 					System.out.println("Connected to Hadoop cloudera");
 					executeCommand("rm -Rf "+rootFolder);
 					executeCommand("mkdir "+rootFolder+"; mkdir "+vectorsFolder);
-					//executeCommand("rm /home/training/HadoopProperties.xml ; rm /home/training/vectors.csv");
 					executeCommand("rm -Rf "+outputFolder+" ;mkdir "+outputFolder); 
 					System.out.println("Created: "+rootFolder+ vectorsFolder+" ,"+outputFolder);
 					transferFile("Settings/HadoopProperties.xml", rootFolder);

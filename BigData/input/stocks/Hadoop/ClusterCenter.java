@@ -6,9 +6,7 @@ import java.io.IOException;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.WritableComparable;
-//for commit
 
-//extends Vector
 public class ClusterCenter  implements WritableComparable<ClusterCenter> {
 	private Vector center;
 	private int neighbors;
